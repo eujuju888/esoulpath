@@ -3,50 +3,49 @@ const axios   = require('axios');
 const crypto  = require('crypto');
 const multer  = require('multer');
 const path    = require('path');
-const fs      = require('fs'); // 新增：用於最底線的本地資料持久化，防止 Railway 重啟歸零
+const fs      = require('fs'); // 新增：用於輕量本地檔案持久化，防止 Railway 重啟歸零
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ── 修正：精準分離 Webhook 的 Raw 流量與一般 JSON 流量 ──
+// ── 修正 #1：最安全的 Webhook 隔離方案 ──────────────────────
+// 將 Webhook 的 Raw 解析直接綁定在單一路由上，不宣告全域中間件
 app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (req, res) => {
   try {
     const sig  = req.headers['x-signature'];
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
     
-    // 確保安全：若沒有密鑰配置，直接拒絕
     if (!secret) {
-      console.error('❌ Missing LEMONSQUEEZY_WEBHOOK_SECRET');
+      console.error('❌ 錯誤: 遺失 LEMONSQUEEZY_WEBHOOK_SECRET 環境變數');
       return res.status(500).end();
     }
 
     const hmac = crypto.createHmac('sha256', secret);
-    hmac.update(req.body); // 此處 req.body 確保為原始 Buffer
+    hmac.update(req.body); // 此時的 req.body 100% 是原始 Buffer
     
-    const computedCipher = hmac.digest('hex');
-    if (!sig || sig !== computedCipher) {
-      console.warn('⚠️ Webhook signature mismatch');
+    if (!sig || sig !== hmac.digest('hex')) {
+      console.warn('⚠️ Webhook 簽章不符，拒絕請求');
       return res.status(401).end();
     }
 
     const p = JSON.parse(req.body.toString());
     if (p.meta?.event_name === 'order_created') {
-      console.log('✅ New order verified:', p.data?.id);
+      console.log('✅ 收到 Lemon Squeezy 新訂單:', p.data?.id);
     }
     res.json({ ok: true });
   } catch (e) {
-    console.error('Webhook error:', e.message);
+    console.error('Webhook 處理失敗:', e.message);
     res.status(500).end();
   }
 });
 
-// 全域 JSON 解析器（排除 webhook，限制 10mb）
+// ── 修正 #2：一般路由中間件（與 Webhook 完全分流） ────────────
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname))); // 靜態檔案目錄維持在根目錄
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ── 修正：臨時性本地檔案持久化（Railway 容器重啟不遺失資料） ──
+// ── 修正 #3：檔案型資料庫（防 Railway 重啟、休眠遺失資料） ────
 const DATA_FILE = path.join(__dirname, 'budget_store.json');
 let store = new Map();
 
@@ -55,22 +54,26 @@ function loadStore() {
     if (fs.existsSync(DATA_FILE)) {
       const raw = fs.readFileSync(DATA_FILE, 'utf8');
       store = new Map(JSON.parse(raw));
+      console.log('🌿 成功載入現有的額度資料庫');
     }
-  } catch (e) { console.error('Load store error:', e); }
+  } catch (e) { console.error('載入資料庫失敗，將建立新檔案:', e.message); }
 }
 function saveStore() {
   try {
     fs.writeFileSync(DATA_FILE, JSON.stringify([...store.entries()]), 'utf8');
-  } catch (e) { console.error('Save store error:', e); }
+  } catch (e) { console.error('資料庫寫入磁碟失敗:', e.message); }
 }
-loadStore(); // 初始化讀取
+loadStore(); // 伺服器啟動時自動載入
 
 // ── Helpers ───────────────────────────────────────────────────
 function cost(i, o) { return (i / 1000) * 0.003 + (o / 1000) * 0.015; }
 
 async function claude(system, messages, maxTokens) {
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) throw new Error('ANTHROPIC_API_KEY is missing in environment variables');
+  if (!key) {
+    throw new Error('Railway 環境變數中找不到 ANTHROPIC_API_KEY，請前往控制台檢查！');
+  }
+  console.log('Claude 金鑰檢查長度:', key.length);
 
   const r = await axios.post(
     'https://api.anthropic.com/v1/messages',
@@ -89,7 +92,7 @@ async function validateLS(licenseKey) {
     );
     return r.data.valid === true;
   } catch (e) {
-    console.error('LS validate error:', e.response?.status, e.response?.data);
+    console.error('LS 驗證 API 失敗:', e.response?.status, e.response?.data);
     return false;
   }
 }
@@ -103,7 +106,7 @@ async function activateLS(licenseKey) {
     );
   } catch (e) {
     if (e.response?.status !== 400 && e.response?.status !== 422) {
-      console.warn('LS activate warning:', e.response?.status, e.response?.data?.error || e.message);
+      console.warn('LS 激活警告 (可忽略):', e.response?.status, e.response?.data?.error || e.message);
     }
   }
 }
@@ -117,7 +120,7 @@ function addSpend(k, c) {
   const b = store.get(k) || { spent: 0 };
   b.spent = +(b.spent + c).toFixed(6);
   store.set(k, b);
-  saveStore(); // 每次變更寫入磁碟，防止 Railway 重啟遺失
+  saveStore(); // 修正：確保寫入磁碟檔案
   return getBudget(k);
 }
 
@@ -189,7 +192,8 @@ app.post('/api/key', async (req, res) => {
   const valid = await validateLS(key);
   if (!valid) return res.status(401).json({ error: 'Invalid license key — please check and try again' });
 
-  activateLS(key).catch(e => console.warn('Background activateLS failed:', e.message));
+  // 背景執行激活，不阻塞使用者前端的響應時間
+  activateLS(key).catch(e => console.warn('背景激活失敗:', e.message));
 
   const b = getBudget(key);
   res.json({ ok: true, remaining: b.remaining });
@@ -213,7 +217,6 @@ Give a complete Eastern Soul Path life navigation reading with all 5 sections:
 ## 📅 The Next 10 Years (${cy}–${cy+9}) — each year: year · age · theme · 🟢/🟡/🔴
 Close warmly and invite questions.`;
 
-    // 修正：max_tokens 調高至 4000 確保完整輸出不被截斷
     const result = await claude(SYSTEM, [{ role: 'user', content: prompt }], 4000);
     const budget = addSpend(key, result.cost);
     res.json({ ok: true, report: result.text, remaining: budget.remaining });
@@ -266,4 +269,4 @@ app.post('/api/image', upload.single('image'), async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`🌿 ESP running on :${PORT}`));
+app.listen(PORT, () => console.log(`🌿 ESP 服務已成功運行在連接埠 :${PORT}`));
