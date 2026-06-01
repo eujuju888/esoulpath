@@ -3,26 +3,74 @@ const axios   = require('axios');
 const crypto  = require('crypto');
 const multer  = require('multer');
 const path    = require('path');
+const fs      = require('fs'); // 新增：用於最底線的本地資料持久化，防止 Railway 重啟歸零
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ── Middleware ────────────────────────────────────────────────
-app.use('/webhook', express.raw({ type: 'application/json' }));
+// ── 修正：精準分離 Webhook 的 Raw 流量與一般 JSON 流量 ──
+app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (req, res) => {
+  try {
+    const sig  = req.headers['x-signature'];
+    const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
+    
+    // 確保安全：若沒有密鑰配置，直接拒絕
+    if (!secret) {
+      console.error('❌ Missing LEMONSQUEEZY_WEBHOOK_SECRET');
+      return res.status(500).end();
+    }
+
+    const hmac = crypto.createHmac('sha256', secret);
+    hmac.update(req.body); // 此處 req.body 確保為原始 Buffer
+    
+    const computedCipher = hmac.digest('hex');
+    if (!sig || sig !== computedCipher) {
+      console.warn('⚠️ Webhook signature mismatch');
+      return res.status(401).end();
+    }
+
+    const p = JSON.parse(req.body.toString());
+    if (p.meta?.event_name === 'order_created') {
+      console.log('✅ New order verified:', p.data?.id);
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('Webhook error:', e.message);
+    res.status(500).end();
+  }
+});
+
+// 全域 JSON 解析器（排除 webhook，限制 10mb）
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname)));
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
-// ── Budget store: licenseKey -> { spent: 0 } ─────────────────
-const store = new Map();
+// ── 修正：臨時性本地檔案持久化（Railway 容器重啟不遺失資料） ──
+const DATA_FILE = path.join(__dirname, 'budget_store.json');
+let store = new Map();
+
+function loadStore() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const raw = fs.readFileSync(DATA_FILE, 'utf8');
+      store = new Map(JSON.parse(raw));
+    }
+  } catch (e) { console.error('Load store error:', e); }
+}
+function saveStore() {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify([...store.entries()]), 'utf8');
+  } catch (e) { console.error('Save store error:', e); }
+}
+loadStore(); // 初始化讀取
 
 // ── Helpers ───────────────────────────────────────────────────
 function cost(i, o) { return (i / 1000) * 0.003 + (o / 1000) * 0.015; }
 
 async function claude(system, messages, maxTokens) {
   const key = process.env.ANTHROPIC_API_KEY;
-  console.log('Claude key length:', key ? key.length : 0);
+  if (!key) throw new Error('ANTHROPIC_API_KEY is missing in environment variables');
 
   const r = await axios.post(
     'https://api.anthropic.com/v1/messages',
@@ -32,7 +80,6 @@ async function claude(system, messages, maxTokens) {
   return { text: r.data.content[0].text, cost: cost(r.data.usage.input_tokens, r.data.usage.output_tokens) };
 }
 
-// ── License Key validation via Lemon Squeezy ─────────────────
 async function validateLS(licenseKey) {
   try {
     const r = await axios.post(
@@ -54,7 +101,11 @@ async function activateLS(licenseKey) {
       { license_key: licenseKey.trim(), instance_name: 'ESP' },
       { headers: { 'Authorization': `Bearer ${process.env.LEMONSQUEEZY_API_KEY}`, 'Accept': 'application/json', 'Content-Type': 'application/json' }, timeout: 10000 }
     );
-  } catch (e) { /* already activated is ok */ }
+  } catch (e) {
+    if (e.response?.status !== 400 && e.response?.status !== 422) {
+      console.warn('LS activate warning:', e.response?.status, e.response?.data?.error || e.message);
+    }
+  }
 }
 
 function getBudget(k) {
@@ -66,6 +117,7 @@ function addSpend(k, c) {
   const b = store.get(k) || { spent: 0 };
   b.spent = +(b.spent + c).toFixed(6);
   store.set(k, b);
+  saveStore(); // 每次變更寫入磁碟，防止 Railway 重啟遺失
   return getBudget(k);
 }
 
@@ -96,7 +148,6 @@ function chartContext(pillars, gender, birthYear) {
 Pillars — Hour: ${e(pillars.hour.stem)}/${e(pillars.hour.branch)} | Day: ${e(pillars.day.stem)}/${e(pillars.day.branch)} | Month: ${e(pillars.month.stem)}/${e(pillars.month.branch)} | Year: ${e(pillars.year.stem)}/${e(pillars.year.branch)}`;
 }
 
-// ── BaZi Calculator ───────────────────────────────────────────
 const S = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
 const B = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
 
@@ -115,7 +166,6 @@ function calcPillars(year, month, day, hour) {
 
 // ── Routes ────────────────────────────────────────────────────
 
-// Health check
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
@@ -125,7 +175,6 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Calculate pillars
 app.post('/api/pillars', (req, res) => {
   try {
     const { year, month, day, hour } = req.body;
@@ -133,18 +182,19 @@ app.post('/api/pillars', (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Validate key
 app.post('/api/key', async (req, res) => {
   const { key } = req.body;
   if (!key) return res.status(400).json({ error: 'No key' });
+
   const valid = await validateLS(key);
   if (!valid) return res.status(401).json({ error: 'Invalid license key — please check and try again' });
-  await activateLS(key);
+
+  activateLS(key).catch(e => console.warn('Background activateLS failed:', e.message));
+
   const b = getBudget(key);
   res.json({ ok: true, remaining: b.remaining });
 });
 
-// Full report
 app.post('/api/report', async (req, res) => {
   const { key, pillars, gender, birthYear } = req.body;
   if (!key || !pillars || !gender || !birthYear) return res.status(400).json({ error: 'Missing fields' });
@@ -163,16 +213,16 @@ Give a complete Eastern Soul Path life navigation reading with all 5 sections:
 ## 📅 The Next 10 Years (${cy}–${cy+9}) — each year: year · age · theme · 🟢/🟡/🔴
 Close warmly and invite questions.`;
 
+    // 修正：max_tokens 調高至 4000 確保完整輸出不被截斷
     const result = await claude(SYSTEM, [{ role: 'user', content: prompt }], 4000);
     const budget = addSpend(key, result.cost);
     res.json({ ok: true, report: result.text, remaining: budget.remaining });
   } catch (e) {
     console.error('Report error:', e.response?.status, e.message);
-    res.status(500).json({ error: 'Generation failed: ' + e.message });
+    res.status(500).json({ error: 'Generation failed: ' + (e.response?.data?.error?.message || e.message) });
   }
 });
 
-// Ask question
 app.post('/api/ask', async (req, res) => {
   const { key, question, pillars, gender, birthYear, history } = req.body;
   if (!key || !question) return res.status(400).json({ error: 'Missing fields' });
@@ -191,7 +241,6 @@ app.post('/api/ask', async (req, res) => {
   }
 });
 
-// Image reading
 app.post('/api/image', upload.single('image'), async (req, res) => {
   const { key } = req.body;
   if (!key || !req.file) return res.status(400).json({ error: 'Missing key or image' });
@@ -215,19 +264,6 @@ app.post('/api/image', upload.single('image'), async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: 'Image read failed: ' + e.message });
   }
-});
-
-// Webhook
-app.post('/webhook/lemonsqueezy', (req, res) => {
-  try {
-    const sig  = req.headers['x-signature'];
-    const hmac = crypto.createHmac('sha256', process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '');
-    hmac.update(req.body);
-    if (sig && sig !== hmac.digest('hex')) return res.status(401).end();
-    const p = JSON.parse(req.body.toString());
-    if (p.meta?.event_name === 'order_created') console.log('✅ New order:', p.data?.id);
-    res.json({ ok: true });
-  } catch (e) { res.status(500).end(); }
 });
 
 app.listen(PORT, () => console.log(`🌿 ESP running on :${PORT}`));
