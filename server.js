@@ -3,13 +3,85 @@ const axios   = require('axios');
 const crypto  = require('crypto');
 const multer  = require('multer');
 const path    = require('path');
-const fs      = require('fs'); // 新增：用於輕量本地檔案持久化，防止 Railway 重啟歸零
+const fs      = require('fs');
+const redis   = require('redis');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// ── 修正 #1：最安全的 Webhook 隔離方案 ──────────────────────
-// 將 Webhook 的 Raw 解析直接綁定在單一路由上，不宣告全域中間件
+// ── 建立 Redis 客戶端與防禦連線機制 ──────────────────────────
+const REDIS_URL = process.env.REDIS_URL;
+let redisClient = null;
+let useRedis = false;
+
+if (REDIS_URL) {
+  console.log('📡 偵測到 REDIS_URL，正在嘗試初始化 Redis...');
+  redisClient = redis.createClient({ url: REDIS_URL });
+  
+  redisClient.on('error', (err) => {
+    console.error('❌ Redis 客戶端錯誤 (將降級使用本地記憶體):', err.message);
+    useRedis = false;
+  });
+
+  redisClient.connect()
+    .then(() => {
+      console.log('🚀 成功連線至 Railway Redis 資料庫');
+      useRedis = true;
+    })
+    .catch((err) => {
+      console.error('❌ Redis 連線失敗 (將降級使用本地記憶體):', err.message);
+      useRedis = false;
+    });
+} else {
+  console.warn('⚠️ 未偵測到 REDIS_URL 環境變數，系統採用本地檔案資料庫模式運作。');
+}
+
+// ── 檔案型備用資料庫（當 Redis 斷線或未設定時的備援方案） ──────────
+const DATA_FILE = path.join(__dirname, 'budget_store.json');
+let localStore = new Map();
+
+function loadLocalStore() {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      localStore = new Map(JSON.parse(fs.readFileSync(DATA_FILE, 'utf8')));
+    }
+  } catch (e) { console.error('備援資料庫載入失敗:', e.message); }
+}
+function saveLocalStore() {
+  try { fs.writeFileSync(DATA_FILE, JSON.stringify([...localStore.entries()]), 'utf8'); } catch (e) { }
+}
+loadLocalStore();
+
+// ── 非同步額度控制機制（動態切換 Redis / 備援磁碟） ──────────
+async function getBudget(k) {
+  if (useRedis && redisClient?.isOpen) {
+    try {
+      const raw = await redisClient.get(`budget:${k}`);
+      const spent = raw ? parseFloat(raw) : 0;
+      return { spent, remaining: +(0.75 - spent).toFixed(4), ok: spent < 0.75 };
+    } catch (e) { console.error('Redis 讀取異常，切換至備援機制'); }
+  }
+  const b = localStore.get(k) || { spent: 0 };
+  return { spent: b.spent, remaining: +(0.75 - b.spent).toFixed(4), ok: b.spent < 0.75 };
+}
+
+async function addSpend(k, c) {
+  if (useRedis && redisClient?.isOpen) {
+    try {
+      const current = await getBudget(k);
+      const newSpent = +(current.spent + c).toFixed(6);
+      await redisClient.set(`budget:${k}`, String(newSpent));
+      return { spent: newSpent, remaining: +(0.75 - newSpent).toFixed(4), ok: newSpent < 0.75 };
+    } catch (e) { console.error('Redis 寫入異常，切換至備援機制'); }
+  }
+  const b = localStore.get(k) || { spent: 0 };
+  b.spent = +(b.spent + c).toFixed(6);
+  localStore.set(k, b);
+  saveLocalStore();
+  return { spent: b.spent, remaining: +(0.75 - b.spent).toFixed(4), ok: b.spent < 0.75 };
+}
+
+// ── Webhook 隔離處理（獨立 Raw 解析） ─────────────────────────
 app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (req, res) => {
   try {
     const sig  = req.headers['x-signature'];
@@ -21,7 +93,7 @@ app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (re
     }
 
     const hmac = crypto.createHmac('sha256', secret);
-    hmac.update(req.body); // 此時的 req.body 100% 是原始 Buffer
+    hmac.update(req.body);
     
     if (!sig || sig !== hmac.digest('hex')) {
       console.warn('⚠️ Webhook 簽章不符，拒絕請求');
@@ -30,7 +102,7 @@ app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (re
 
     const p = JSON.parse(req.body.toString());
     if (p.meta?.event_name === 'order_created') {
-      console.log('✅ 收到 Lemon Squeezy 新訂單:', p.data?.id);
+      console.log('✅ 驗證成功！收到 Lemon Squeezy 新訂單:', p.data?.id);
     }
     res.json({ ok: true });
   } catch (e) {
@@ -39,40 +111,20 @@ app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (re
   }
 });
 
-// ── 修正 #2：一般路由中間件（與 Webhook 完全分流） ────────────
+// ── 中間件配置（與 Webhook 路由完全分流） ───────────────────────
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname))); // 靜態檔案目錄維持在根目錄
+
+// 🎯 修正：將靜態檔案目錄精準指向 public/ 資料夾
+app.use(express.static(path.join(__dirname, 'public')));
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
-
-// ── 修正 #3：檔案型資料庫（防 Railway 重啟、休眠遺失資料） ────
-const DATA_FILE = path.join(__dirname, 'budget_store.json');
-let store = new Map();
-
-function loadStore() {
-  try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf8');
-      store = new Map(JSON.parse(raw));
-      console.log('🌿 成功載入現有的額度資料庫');
-    }
-  } catch (e) { console.error('載入資料庫失敗，將建立新檔案:', e.message); }
-}
-function saveStore() {
-  try {
-    fs.writeFileSync(DATA_FILE, JSON.stringify([...store.entries()]), 'utf8');
-  } catch (e) { console.error('資料庫寫入磁碟失敗:', e.message); }
-}
-loadStore(); // 伺服器啟動時自動載入
 
 // ── Helpers ───────────────────────────────────────────────────
 function cost(i, o) { return (i / 1000) * 0.003 + (o / 1000) * 0.015; }
 
 async function claude(system, messages, maxTokens) {
   const key = process.env.ANTHROPIC_API_KEY;
-  if (!key) {
-    throw new Error('Railway 環境變數中找不到 ANTHROPIC_API_KEY，請前往控制台檢查！');
-  }
+  if (!key) throw new Error('環境變數中找不到 ANTHROPIC_API_KEY');
   console.log('Claude 金鑰檢查長度:', key.length);
 
   const r = await axios.post(
@@ -111,37 +163,12 @@ async function activateLS(licenseKey) {
   }
 }
 
-function getBudget(k) {
-  const b = store.get(k) || { spent: 0 };
-  return { spent: b.spent, remaining: +(0.75 - b.spent).toFixed(4), ok: b.spent < 0.75 };
-}
-
-function addSpend(k, c) {
-  const b = store.get(k) || { spent: 0 };
-  b.spent = +(b.spent + c).toFixed(6);
-  store.set(k, b);
-  saveStore(); // 修正：確保寫入磁碟檔案
-  return getBudget(k);
-}
-
-// ── System Prompt ─────────────────────────────────────────────
+// ── System Prompt & BaZi 演算 ─────────────────────────────────
 const SYSTEM = `You are a warm, wise Eastern life navigation guide for Eastern Soul Path.
 "I help you read the map, but you choose the road."
-
 TONE: Warm, grounding, non-scary. Like a trusted friend with ancient wisdom.
 Never say: bad luck, cursed, dangerous, doomed, worst year, disaster.
 Instead use: tension pattern, extra mindful, supportive cycle, mindful period.
-
-For full reading, use these sections:
-## 🌿 Your Life Structure
-## 💼 Career & Wealth Journey
-## ❤️ Love & Relationships
-## 🌊 Your Life Cycles
-## 📅 The Next 10 Years
-
-Life cycles: give theme + description + 🟢 Supportive / 🟡 Mindful / 🔴 Extra Mindful
-Next 10 years: each year with theme and indicator.
-End warmly, invite follow-up questions.
 Respond in English.`;
 
 function chartContext(pillars, gender, birthYear) {
@@ -167,14 +194,20 @@ function calcPillars(year, month, day, hour) {
   return { year: yP, month: mP, day: dP, hour: hP };
 }
 
-// ── Routes ────────────────────────────────────────────────────
+// ── 路由控制（全面支援 async/await） ────────────────────────────
+
+// 🎯 修正：強制將首頁根路由導向 public 資料夾內的 index.html
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.get('/health', (req, res) => {
   res.json({
     ok: true,
     anthropic_key: !!process.env.ANTHROPIC_API_KEY,
     ls_key: !!process.env.LEMONSQUEEZY_API_KEY,
-    key_length: process.env.ANTHROPIC_API_KEY?.length || 0
+    key_length: process.env.ANTHROPIC_API_KEY?.length || 0,
+    redis_connected: redisClient ? redisClient.isOpen : false
   });
 });
 
@@ -192,17 +225,17 @@ app.post('/api/key', async (req, res) => {
   const valid = await validateLS(key);
   if (!valid) return res.status(401).json({ error: 'Invalid license key — please check and try again' });
 
-  // 背景執行激活，不阻塞使用者前端的響應時間
   activateLS(key).catch(e => console.warn('背景激活失敗:', e.message));
 
-  const b = getBudget(key);
+  const b = await getBudget(key);
   res.json({ ok: true, remaining: b.remaining });
 });
 
 app.post('/api/report', async (req, res) => {
   const { key, pillars, gender, birthYear } = req.body;
   if (!key || !pillars || !gender || !birthYear) return res.status(400).json({ error: 'Missing fields' });
-  const b = getBudget(key);
+  
+  const b = await getBudget(key);
   if (!b.ok) return res.status(402).json({ error: 'Credit used up. Get a new reading at easternsoulfpath.com' });
 
   try {
@@ -218,10 +251,10 @@ Give a complete Eastern Soul Path life navigation reading with all 5 sections:
 Close warmly and invite questions.`;
 
     const result = await claude(SYSTEM, [{ role: 'user', content: prompt }], 4000);
-    const budget = addSpend(key, result.cost);
+    const budget = await addSpend(key, result.cost);
     res.json({ ok: true, report: result.text, remaining: budget.remaining });
   } catch (e) {
-    console.error('Report error:', e.response?.status, e.message);
+    console.error('Report error:', e.message);
     res.status(500).json({ error: 'Generation failed: ' + (e.response?.data?.error?.message || e.message) });
   }
 });
@@ -229,17 +262,18 @@ Close warmly and invite questions.`;
 app.post('/api/ask', async (req, res) => {
   const { key, question, pillars, gender, birthYear, history } = req.body;
   if (!key || !question) return res.status(400).json({ error: 'Missing fields' });
-  const b = getBudget(key);
+  
+  const b = await getBudget(key);
   if (!b.ok) return res.status(402).json({ error: 'Credit used up. Get a new reading at easternsoulfpath.com' });
 
   try {
     const ctx = pillars ? `\n\nCHART: ${chartContext(pillars, gender, +birthYear)}` : '';
     const messages = [...(history||[]).slice(-10), { role:'user', content: question }];
     const result = await claude(SYSTEM + ctx, messages, 1200);
-    const budget = addSpend(key, result.cost);
+    const budget = await addSpend(key, result.cost);
     res.json({ ok: true, answer: result.text, remaining: budget.remaining });
   } catch (e) {
-    console.error('Ask error:', e.response?.status, e.message);
+    console.error('Ask error:', e.message);
     res.status(500).json({ error: 'Failed: ' + e.message });
   }
 });
@@ -247,7 +281,8 @@ app.post('/api/ask', async (req, res) => {
 app.post('/api/image', upload.single('image'), async (req, res) => {
   const { key } = req.body;
   if (!key || !req.file) return res.status(400).json({ error: 'Missing key or image' });
-  const b = getBudget(key);
+  
+  const b = await getBudget(key);
   if (!b.ok) return res.status(402).json({ error: 'Credit used up' });
 
   try {
@@ -255,18 +290,19 @@ app.post('/api/image', upload.single('image'), async (req, res) => {
       'https://api.anthropic.com/v1/messages',
       { model: 'claude-sonnet-4-20250514', max_tokens: 300, messages: [{ role: 'user', content: [
         { type: 'image', source: { type: 'base64', media_type: req.file.mimetype, data: req.file.buffer.toString('base64') } },
-        { type: 'text', text: 'Extract BaZi four pillars. Return JSON only: {"hour":{"stem":"X","branch":"X"},"day":{"stem":"X","branch":"X"},"month":{"stem":"X","branch":"X"},"year":{"stem":"X","branch":"X"}} Stems: 甲乙丙丁戊己庚辛壬癸 Branches: 子丑寅卯辰巳午未申酉戌亥' }
+        { type: 'text', text: 'Extract BaZi four pillars. Return JSON only: {"hour":{"stem":"X","branch":"X"},"day":{"stem":"X","branch":"X"},"month":{"stem":"X","branch":"X"},"year":{"stem":"X","branch":"X"}}' }
       ]}] },
       { headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, timeout: 30000 }
     );
     const text = r.data.content[0].text;
-    const pillars = JSON.parse(text.replace(/```json\n?/g,'').replace(/```/g,'').trim());
+    const pillars = JSON.parse(text.replace(/```json\n?/g,'').replace(/
+```/g,'').trim());
     const c = cost(r.data.usage.input_tokens, r.data.usage.output_tokens);
-    const budget = addSpend(key, c);
+    const budget = await addSpend(key, c);
     res.json({ ok: true, pillars, remaining: budget.remaining });
   } catch (e) {
     res.status(500).json({ error: 'Image read failed: ' + e.message });
   }
 });
 
-app.listen(PORT, () => console.log(`🌿 ESP 服務已成功運行在連接埠 :${PORT}`));
+app.listen(PORT, () => console.log(`🌿 ESP 全端服務已成功執行於埠號 :${PORT}`));
