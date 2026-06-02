@@ -84,7 +84,7 @@ async function addSpend(k, c) {
 // ── Webhook 隔離處理（獨立 Raw 解析） ─────────────────────────
 app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (req, res) => {
   try {
-    const sig  = req.headers['x-signature'];
+    const sig    = req.headers['x-signature'];
     const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET || '';
     
     if (!secret) {
@@ -113,8 +113,6 @@ app.post('/webhook/lemonsqueezy', express.raw({ type: 'application/json' }), (re
 
 // ── 中間件配置（與 Webhook 路由完全分流） ───────────────────────
 app.use(express.json({ limit: '10mb' }));
-
-// 🎯 修正：將靜態檔案目錄精準指向 public/ 資料夾
 app.use(express.static(path.join(__dirname, 'public')));
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
@@ -194,9 +192,8 @@ function calcPillars(year, month, day, hour) {
   return { year: yP, month: mP, day: dP, hour: hP };
 }
 
-// ── 路由控制（全面支援 async/await） ────────────────────────────
+// ── 路由 ──────────────────────────────────────────────────────
 
-// 🎯 修正：強制將首頁根路由導向 public 資料夾內的 index.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -295,8 +292,7 @@ app.post('/api/image', upload.single('image'), async (req, res) => {
       { headers: { 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' }, timeout: 30000 }
     );
     const text = r.data.content[0].text;
-    const pillars = JSON.parse(text.replace(/```json\n?/g,'').replace(/
-```/g,'').trim());
+    const pillars = JSON.parse(text.replace(/```json\n?/g,'').replace(/```/g,'').trim());
     const c = cost(r.data.usage.input_tokens, r.data.usage.output_tokens);
     const budget = await addSpend(key, c);
     res.json({ ok: true, pillars, remaining: budget.remaining });
