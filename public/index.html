@@ -7,251 +7,449 @@
 <meta name="description" content="Ancient Eastern wisdom meets AI. Get your personal BaZi life navigation reading — career, love, timing, and what the road ahead holds.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --sand:#F5EFE4; --sand-dark:#EDE4D4; --sand-mid:#F0E8D8;
-  --parchment:#FAF6EF; --stone:#C4B49A; --stone-dark:#9E8B72;
-  --sage:#7A8C6E; --sage-dark:#5A6B50; --sage-light:#EBF0E6; --sage-pale:#F4F7F1;
-  --earth:#6B5B45; --earth-dark:#4A3D2C;
-  --terra:#B8826A; --terra-light:#F5EBE4;
-  --warm-white:#FEFCF8; --text:#2E2418; --muted:#7A6E62;
-  --muted-light:#ABA094; --border:#DDD5C5; --border-light:#EDE8DF;
-  --white:#FFFFFF; --red:#8B3A2A;
-  --radius:4px; --radius-sm:4px;
-  --shadow:0 2px 12px rgba(44,36,22,.07);
+  --sand:        #FFFFFF;
+  --sand-dark:   #FFFFFF;
+  --white:       #FFFFFF;
+  --sage:        #2C4A2E;
+  --sage-dark:   #1A3020;
+  --sage-pale:   #F4F7F3;
+  --forest:      #1B3A2D;
+  --text:        #0F0F0E;
+  --muted:       #5C5C56;
+  --muted-light: #9A9A92;
+  --border:      rgba(15,15,14,.08);
+  --border-mid:  rgba(15,15,14,.14);
+  --shadow:      0 1px 16px rgba(15,15,14,.04);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Cormorant Garamond',Georgia,serif;background:var(--sand);color:var(--text);line-height:1.75;min-height:100vh}
-.sans{font-family:'Jost',system-ui,sans-serif}
-
-@media print {
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--sand);
+  color:var(--text);
+  font-size:16px;font-weight:400;
+  line-height:1.7;letter-spacing:0;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased
+}
+@media print{
   .no-print{display:none!important}
   .print-only{display:block!important}
-  body{background:white;font-size:12px}
-  #inputSection{display:none!important}
-  .reading-header{background:var(--earth-dark)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .reading-header{background:var(--forest)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 .print-only{display:none}
 
-.container{max-width:700px;margin:0 auto;padding:0 1.5rem}
-
-/* Header */
-.site-header{background:var(--earth-dark);color:white;padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
-.brand{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;letter-spacing:.08em}
-.brand b{font-weight:600}
-.brand span{color:#D4BC9A;font-style:italic}
-.header-actions{display:flex;align-items:center;gap:10px}
-.uses-badge{background:rgba(255,255,255,.12);border-radius:99px;padding:4px 14px;font-size:11px;font-family:'Jost',sans-serif;color:rgba(255,255,255,.85);letter-spacing:.04em}
-.btn-print{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:white;padding:6px 16px;border-radius:99px;font-size:11px;font-family:'Jost',sans-serif;cursor:pointer;transition:all .2s;display:none;letter-spacing:.04em}
-.btn-print:hover{background:rgba(255,255,255,.22)}
-.btn-print.visible{display:block}
-
-/* Hero */
-.hero{background:var(--sand);color:var(--text);padding:1.75rem 1.5rem 1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;border-bottom:0.5px solid var(--border-light)}
-.hero-brush{margin-bottom:1.25rem;opacity:.5}
-.hero h1{font-family:'Playfair Display','Cormorant Garamond',Georgia,serif;font-size:clamp(1.75rem,3.8vw,2.4rem);font-weight:400;line-height:1.28;margin-bottom:1.5rem;letter-spacing:.01em;color:#2A2A2A;max-width:480px}
-.hero h1 em{font-style:italic;font-weight:400}
-.hero-sub{font-size:.9rem;color:#4A4A4A;max-width:480px;margin:0 auto .75rem;font-family:'Jost',sans-serif;font-weight:300;line-height:1.95;letter-spacing:.01em}
-
-.hero-quote-band{width:100%;background:var(--sand);border-top:0.5px solid var(--border-light);border-bottom:0.5px solid var(--border-light);padding:3.5rem 1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:1rem}
-.hero-quote-rule{width:28px;height:1px;background:#A3704C;opacity:.7}
-.hero-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(1.3rem,2.5vw,1.6rem);font-style:italic;font-weight:400;color:#2A2A2A;letter-spacing:.02em;line-height:1.5;max-width:420px;margin:0}
-
-.how-strip{background:var(--sand);padding:2.75rem 1.5rem 3rem;border-bottom:0.5px solid var(--border-light)}
-.how-label{font-family:'Jost',sans-serif;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-light);font-weight:500;text-align:center;margin-bottom:1.25rem}
-.how-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;max-width:700px;margin:0 auto}
-.how-card{background:var(--warm-white);border-radius:4px;padding:1.5rem 1rem 1.25rem;text-align:center;border:0.5px solid var(--border-light);box-shadow:0 1px 4px rgba(44,36,22,.04);display:flex;flex-direction:column;align-items:center;gap:10px}
-.how-card-icon{width:34px;height:34px;border-radius:4px;background:var(--terra-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
-.how-card-num{font-family:'Cormorant Garamond',serif;font-size:11px;color:var(--muted-light);letter-spacing:.1em;text-transform:uppercase}
-.how-card-t{font-family:'Jost',sans-serif;font-size:12px;font-weight:500;color:#2A2A2A;line-height:1.4}
-.how-card-s{font-family:'Jost',sans-serif;font-size:11px;color:var(--muted-light);font-weight:300;line-height:1.55}
-
-/* Input */
-#inputSection{padding:2.5rem 0 3rem}
-.card{background:var(--warm-white);border:1px solid var(--border-light);border-radius:var(--radius);padding:1.75rem;box-shadow:var(--shadow)}
-.card-title{font-size:1.1rem;font-weight:500;color:var(--earth);margin-bottom:1.5rem;font-family:'Jost',sans-serif;display:flex;align-items:center;gap:10px;letter-spacing:.02em}
-.card-title-icon{width:28px;height:28px;background:var(--terra-light);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
-.form-label{font-size:11px;color:var(--muted);font-family:'Jost',sans-serif;letter-spacing:.07em;text-transform:uppercase;font-weight:500}
-
-select,input[type=number],input[type=date],input[type=time],input[type=text],input[type=password]{
-  border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:10px 14px;
-  font-size:14px;color:var(--text);background:var(--parchment);width:100%;
-  font-family:'Jost',sans-serif;font-weight:300;
-  transition:border-color .2s,background .2s;-webkit-appearance:none;appearance:none
+/* ── NAV ── */
+.site-header{
+  background:var(--sand);
+  border-bottom:0.5px solid var(--border);
+  padding:0 56px;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;position:sticky;top:0;z-index:200
 }
-select:focus,input:focus{outline:none;border-color:var(--sage);background:var(--white);box-shadow:0 0 0 3px rgba(122,140,110,.12)}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237A6E62' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.brand{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:20px;font-weight:500;
+  letter-spacing:.01em;color:var(--text)
+}
+.brand-reg{font-size:9px;vertical-align:super;font-weight:400;opacity:.5;margin-left:1px}
+.header-right{display:flex;align-items:center;gap:20px}
+.uses-badge{font-family:'Inter',sans-serif;font-size:11px;letter-spacing:.06em;color:var(--muted-light);display:none}
+.btn-print{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--sage);background:transparent;border:1px solid var(--sage);padding:7px 16px;cursor:pointer;transition:all .2s;display:none}
+.btn-print:hover{background:var(--sage);color:white}
+.btn-print.visible{display:inline-flex}
 
-.gender-section{margin-bottom:18px}
-.gender-label{font-size:11px;color:var(--muted);font-family:'Jost',sans-serif;letter-spacing:.07em;text-transform:uppercase;font-weight:500;margin-bottom:8px}
-.gender-row{display:flex;gap:10px}
-.gender-btn{flex:1;padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);text-align:center;cursor:pointer;font-size:13px;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:.03em;transition:all .2s;background:var(--parchment);color:var(--muted)}
-.gender-btn.sel{border-color:var(--sage);background:var(--sage-light);color:var(--sage-dark);font-weight:500}
+/* ── HERO — centered, Zen, 140-180px padding ── */
+.hero{
+  background:var(--sand);
+  padding:160px 40px 140px;
+  text-align:center;
+  border-bottom:0.5px solid var(--border)
+}
+.hero-inner{max-width:760px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
+.hero-eyebrow{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:40px
+}
+/* H1: EB Garamond 600, large, no italic */
+.hero h1{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:clamp(48px,5.5vw,66px);
+  font-weight:600;line-height:1.08;
+  color:var(--text);letter-spacing:-.025em;
+  max-width:720px;margin-bottom:36px
+}
+/* Subheadline: Inter 18px */
+.hero-sub{
+  font-family:'Inter',sans-serif;
+  font-size:18px;font-weight:400;
+  color:var(--muted);max-width:540px;
+  line-height:1.75;letter-spacing:0;margin-bottom:56px
+}
+/* Signature: Cormorant Italic */
+.hero-sig{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:22px;font-style:italic;font-weight:400;
+  color:var(--sage);letter-spacing:.01em;line-height:1.4;
+  display:flex;align-items:center;gap:20px
+}
+.hero-sig::before,.hero-sig::after{content:'';width:32px;height:1px;background:var(--sage);opacity:.4}
 
-.key-sub{font-size:12px;color:var(--muted);font-family:'Jost',sans-serif;margin-bottom:12px;font-weight:300;line-height:1.6}
-.key-row{display:flex;gap:8px}
-.key-input{flex:1;font-family:'Jost',monospace;letter-spacing:.05em;font-size:13px}
-.key-link{font-size:12px;color:var(--stone-dark);font-family:'Jost',sans-serif;text-align:center;margin-top:10px;display:block;letter-spacing:.02em}
-.key-link a{color:var(--terra);text-decoration:none;border-bottom:1px solid rgba(184,130,106,.3)}
+/* ── PHILOSOPHY ── */
+.philosophy{
+  background:var(--sand);
+  padding:120px 40px;
+  text-align:center;
+  border-bottom:0.5px solid var(--border)
+}
+.philosophy-inner{max-width:680px;margin:0 auto}
+.philosophy-label{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:48px
+}
+/* H2: EB Garamond 400, large */
+.philosophy-title{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:clamp(32px,3.5vw,44px);font-weight:400;
+  color:var(--text);line-height:1.2;
+  letter-spacing:-.01em;margin-bottom:32px
+}
+.philosophy-body{
+  font-family:'Inter',sans-serif;
+  font-size:17px;font-weight:400;
+  color:var(--muted);line-height:1.8;letter-spacing:0;
+  max-width:580px;margin:0 auto
+}
 
-.btn{width:100%;padding:14px;border:none;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;transition:all .25s;font-family:'Jost',sans-serif;letter-spacing:.06em;text-transform:uppercase}
-.btn-primary{background:linear-gradient(135deg,var(--earth) 0%,var(--earth-dark) 100%);color:white;box-shadow:0 4px 16px rgba(74,61,44,.25)}
-.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 24px rgba(74,61,44,.32)}
-.btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-.btn-outline{background:transparent;color:var(--sage-dark);border:1.5px solid var(--sage);font-size:13px}
-.btn-outline:hover{background:var(--sage-light)}
-.btn-sm{width:auto;padding:9px 18px;font-size:11px;border-radius:99px}
+/* ── THREE STEPS — white cards, editorial ── */
+.steps-section{
+  background:var(--sand);
+  padding:120px 40px;
+  border-bottom:0.5px solid var(--border)
+}
+.steps-inner{max-width:1080px;margin:0 auto}
+.steps-label{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:64px;text-align:center
+}
+.steps-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.step-card{
+  background:var(--white);
+  border-radius:16px;border:0.5px solid var(--border);
+  padding:52px 40px;
+  display:flex;flex-direction:column;gap:20px;
+  box-shadow:var(--shadow)
+}
+.step-num{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  color:var(--sage);letter-spacing:.18em;text-transform:uppercase
+}
+/* Step Title: Inter 18px Medium */
+.step-title{
+  font-family:'Inter',sans-serif;
+  font-size:18px;font-weight:500;
+  color:var(--text);line-height:1.35;letter-spacing:.005em
+}
+/* Step Body: Inter 16px */
+.step-body{
+  font-family:'Inter',sans-serif;
+  font-size:16px;font-weight:400;
+  color:var(--muted);line-height:1.7;letter-spacing:0
+}
 
-.btn-cta{background:linear-gradient(135deg,var(--earth) 0%,#3A2D1E 100%);color:white;font-size:13px;letter-spacing:.1em;padding:14px 20px;border-radius:var(--radius);border:none;cursor:pointer;width:100%;font-family:'Jost',sans-serif;font-weight:500;transition:all .25s;box-shadow:0 4px 20px rgba(74,61,44,.22);margin-bottom:8px}
-.btn-cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(74,61,44,.30)}
+/* ── SAMPLE READING ── */
+.sample-section{
+  background:var(--sand);
+  padding:120px 40px;
+  border-bottom:0.5px solid var(--border)
+}
+.sample-inner{max-width:1080px;margin:0 auto}
+.sample-label{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:64px;text-align:center
+}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.sample-q{
+  background:var(--forest);border-radius:0;
+  padding:48px 40px;color:white
+}
+.sample-q-label{
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:400;
+  letter-spacing:.2em;text-transform:uppercase;
+  opacity:.45;margin-bottom:20px
+}
+/* Signature style for question */
+.sample-q-text{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  font-size:22px;font-style:italic;font-weight:400;
+  line-height:1.5;opacity:.9;letter-spacing:.01em
+}
+.sample-a{
+  background:var(--white);border-radius:0;
+  padding:48px 40px;border:0.5px solid var(--border);
+  box-shadow:var(--shadow)
+}
+.sample-a-label{
+  font-family:'Inter',sans-serif;font-size:10px;font-weight:400;
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:20px
+}
+.sample-a-text{
+  font-family:'Inter',sans-serif;
+  font-size:16px;font-weight:400;
+  color:var(--muted);line-height:1.8;letter-spacing:0
+}
+.sample-a-highlight{color:var(--sage);font-weight:500}
 
-/* Loading */
-#loadingSection{display:none;text-align:center;padding:5rem 1.5rem}
-.loading-icon{font-size:2rem;margin-bottom:1.25rem;animation:sway 2.5s ease-in-out infinite;display:block}
-@keyframes sway{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
-.loading-title{font-size:1.4rem;color:var(--earth);margin-bottom:.5rem;font-weight:300;letter-spacing:.03em}
-.loading-sub{font-size:13px;color:var(--muted);font-family:'Jost',sans-serif;font-weight:300;letter-spacing:.03em}
+/* ── FORM — bottom, centered, white rounded card, 650px ── */
+#inputSection{
+  background:var(--sand);
+  padding:120px 40px 140px;
+  border-top:0.5px solid var(--border)
+}
+.form-wrap{max-width:650px;margin:0 auto}
+.form-section-label{
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--muted-light);margin-bottom:24px;text-align:center
+}
+/* H2 style */
+.form-heading{
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:clamp(32px,3.5vw,44px);font-weight:400;
+  color:var(--text);margin-bottom:64px;
+  letter-spacing:-.01em;line-height:1.2;text-align:center
+}
+.card{
+  background:var(--white);
+  border:0.5px solid var(--border);
+  border-radius:0;
+  padding:48px;margin-bottom:0;
+  box-shadow:none
+}
+.card+.card{border-top:none;border-radius:0;margin-top:-1px}
+.card:first-of-type{border-radius:0}
+.card-label{
+  font-size:11px;font-weight:400;color:var(--muted-light);
+  margin-bottom:36px;font-family:'Inter',sans-serif;
+  letter-spacing:.2em;text-transform:uppercase
+}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.form-group{display:flex;flex-direction:column;gap:10px;margin-bottom:32px}
+.form-label{font-size:12px;color:var(--muted);font-family:'Inter',sans-serif;letter-spacing:.08em;font-weight:400}
+
+/* Underline inputs only */
+select,input[type=number],input[type=date],input[type=time],input[type=text],input[type=password]{
+  border:none;border-bottom:1px solid var(--border-mid);
+  padding:12px 0;font-size:16px;color:var(--text);
+  background:transparent;width:100%;
+  font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0;
+  transition:border-color .2s;-webkit-appearance:none;appearance:none;border-radius:0
+}
+select:focus,input:focus{outline:none;border-bottom-color:var(--sage)}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%23A8A8A0' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 2px center;padding-right:20px}
+
+.gender-section{margin-bottom:32px}
+.gender-label{font-size:12px;color:var(--muted);font-family:'Inter',sans-serif;letter-spacing:.08em;font-weight:400;margin-bottom:14px}
+.gender-row{display:flex;gap:12px}
+.gender-btn{flex:1;padding:13px 20px;border:1px solid var(--border-mid);border-radius:0;text-align:center;cursor:pointer;font-size:12px;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:.1em;text-transform:uppercase;transition:all .2s;background:var(--white);color:var(--muted)}
+.gender-btn.sel{background:var(--forest);color:white;border-color:var(--forest)}
+
+.key-sub{font-size:16px;color:var(--muted);font-family:'Inter',sans-serif;margin-bottom:20px;font-weight:400;line-height:1.65;letter-spacing:0}
+.key-row{display:flex;gap:0;border-bottom:1px solid var(--border-mid);align-items:flex-end}
+.key-input{flex:1;font-family:'Inter',monospace;letter-spacing:.04em;font-size:14px;border:none;border-bottom:none;padding-bottom:12px}
+.key-link{font-size:15px;color:var(--muted);font-family:'Inter',sans-serif;text-align:center;margin-top:18px;display:block;letter-spacing:0}
+.key-link a{color:var(--sage);text-decoration:none;border-bottom:1px solid rgba(74,103,65,.25)}
+.key-link a:hover{border-bottom-color:var(--sage)}
+
+.btn{width:100%;padding:18px;border:none;font-size:12px;font-weight:400;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;letter-spacing:.18em;text-transform:uppercase}
+.btn-primary{background:var(--forest);color:white;border-radius:0;margin-top:8px}
+.btn-primary:hover{background:var(--sage-dark)}
+.btn-primary:disabled{opacity:.3;cursor:not-allowed}
+.btn-outline{background:transparent;color:var(--sage);border:1px solid var(--sage);font-size:10px;width:auto;padding:11px 22px;border-radius:0}
+.btn-outline:hover{background:var(--sage);color:white}
+.btn-sm{width:auto}
+.result-box{padding:12px 0;font-size:15px;color:var(--sage);font-family:'Inter',sans-serif;margin-top:14px;display:none;font-weight:400}
+.divider{height:1px;background:var(--border);margin:32px 0}
+.helper{font-size:15px;color:var(--muted-light);font-family:'Inter',sans-serif;text-align:center;margin-top:16px;font-weight:400;letter-spacing:0}
+
+/* ── LOADING ── */
+#loadingSection{display:none;text-align:center;padding:160px 40px;background:var(--sand)}
+.loading-icon{font-size:2.2rem;margin-bottom:32px;animation:sway 3s ease-in-out infinite;display:block}
+@keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.loading-title{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--text);margin-bottom:12px;font-weight:400;font-style:italic;line-height:1.2}
+.loading-sub{font-size:16px;color:var(--muted-light);font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0}
 .loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
 @keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
 
-/* Reading */
-#readingPage{display:none;padding-bottom:4rem}
-.reading-header{background:linear-gradient(145deg,var(--earth-dark) 0%,#2E2418 100%);color:white;padding:2.5rem 1.5rem;text-align:center;position:relative;overflow:hidden}
-.reading-header::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23D4BC9A' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none}
-.reading-name{font-size:.75rem;opacity:.55;font-family:'Jost',sans-serif;margin-bottom:.5rem;letter-spacing:.12em;text-transform:uppercase}
-.reading-title{font-size:1.6rem;font-weight:300;letter-spacing:.04em}
-.reading-subtitle{font-size:.8rem;opacity:.6;font-family:'Jost',sans-serif;margin-bottom:.875rem;letter-spacing:.06em;text-transform:uppercase}
-.reading-pillars{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:.875rem 0}
-.pillar-chip{background:rgba(255,255,255,.1);border-radius:8px;padding:4px 12px;font-size:13px;font-family:'Jost',sans-serif;font-weight:300;border:1px solid rgba(255,255,255,.12)}
-.pillar-chip.day{background:rgba(212,188,154,.2);color:#D4BC9A;border-color:rgba(212,188,154,.3)}
-.reading-meta{font-size:11px;opacity:.5;font-family:'Jost',sans-serif;margin-top:.5rem;letter-spacing:.04em}
+/* ── READING ── */
+#readingPage{display:none;padding-bottom:6rem}
+.reading-header{background:var(--forest);color:white;padding:88px 48px 72px;text-align:center}
+.reading-name{font-size:10px;opacity:.3;font-family:'Inter',sans-serif;margin-bottom:14px;letter-spacing:.22em;text-transform:uppercase}
+.reading-title{font-family:'EB Garamond',Georgia,serif;font-size:clamp(36px,4vw,52px);font-weight:500;letter-spacing:-.01em;line-height:1.15;opacity:.95}
+.reading-subtitle{font-size:10px;opacity:.28;font-family:'Inter',sans-serif;margin-top:12px;letter-spacing:.2em;text-transform:uppercase}
+.reading-pillars{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:28px 0 18px}
+.pillar-chip{background:rgba(255,255,255,.08);padding:6px 16px;font-size:12px;font-family:'Inter',sans-serif;font-weight:400;border:1px solid rgba(255,255,255,.12);letter-spacing:.06em;border-radius:4px}
+.pillar-chip.day{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.25)}
+.reading-meta{font-size:12px;opacity:.26;font-family:'Inter',sans-serif;margin-top:6px;letter-spacing:.08em}
 
-.report-body{padding:2rem 1.5rem;max-width:700px;margin:0 auto}
-.report-content{font-size:16px;line-height:1.9;color:var(--text)}
-.report-content h2{font-size:1.2rem;color:var(--earth);margin:2rem 0 .875rem;padding-bottom:.625rem;border-bottom:1px solid var(--border-light);font-weight:400;letter-spacing:.03em}
+.report-body{padding:80px 48px;max-width:760px;margin:0 auto}
+.report-content{font-size:16px;line-height:1.7;color:var(--text);letter-spacing:0}
+.report-content h2{font-family:'EB Garamond',Georgia,serif;font-size:clamp(28px,3vw,36px);color:var(--text);margin:3.5rem 0 1.25rem;padding-bottom:.875rem;border-bottom:0.5px solid var(--border);font-weight:400;letter-spacing:-.01em;line-height:1.2}
 .report-content h2:first-child{margin-top:0}
-.report-content p{margin-bottom:1rem;color:var(--muted)}
-.report-content ul,.report-content ol{padding-left:1.5rem;margin-bottom:1rem}
-.report-content li{margin-bottom:.5rem;color:var(--muted)}
-.report-content strong{color:var(--text);font-weight:600}
-.report-content em{color:var(--sage-dark)}
+.report-content p{margin-bottom:1.25rem;color:var(--muted);font-size:16px;font-weight:400;line-height:1.75;letter-spacing:0}
+.report-content ul,.report-content ol{padding-left:1.5rem;margin-bottom:1.25rem}
+.report-content li{margin-bottom:.6rem;color:var(--muted);font-size:16px;font-weight:400;line-height:1.7}
+.report-content strong{color:var(--text);font-weight:500}
+.report-content em{color:var(--sage)}
 
-/* Chat */
-#chatSection{margin-top:2.5rem;padding-top:2rem;border-top:1px solid var(--border-light)}
-.chat-title{font-family:'Jost',sans-serif;font-size:10px;font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--muted-light);margin-bottom:1.5rem;display:flex;align-items:center;justify-content:center;gap:12px}
-.chat-title::before,.chat-title::after{content:'';flex:1;max-width:60px;height:0.5px;background:var(--muted-light);opacity:.5}
-
-.quick-wrap{overflow-x:auto;margin-bottom:1.25rem;padding-bottom:4px}
-.quick-list{display:flex;gap:6px;width:max-content}
-.quick-btn{background:var(--warm-white);border:0.5px solid var(--border);border-radius:99px;padding:7px 16px;font-size:11px;color:var(--earth);cursor:pointer;white-space:nowrap;font-family:'Jost',sans-serif;font-weight:400;letter-spacing:.04em;transition:all .2s}
-.quick-btn:hover{background:var(--sage-light);border-color:var(--sage)}
-
-.messages{display:flex;flex-direction:column;gap:14px;margin-bottom:1.5rem;min-height:40px}
-.msg{max-width:85%}
+/* ── CHAT ── */
+#chatSection{margin-top:4rem;padding-top:4rem;border-top:0.5px solid var(--border)}
+.chat-title{font-family:'Inter',sans-serif;font-size:11px;font-weight:400;letter-spacing:.2em;text-transform:uppercase;color:var(--muted-light);margin-bottom:36px;display:flex;align-items:center;justify-content:center;gap:20px}
+.chat-title::before,.chat-title::after{content:'';flex:1;max-width:56px;height:1px;background:var(--border)}
+.quick-wrap{overflow-x:auto;margin-bottom:24px;padding-bottom:4px;-ms-overflow-style:none;scrollbar-width:none}
+.quick-wrap::-webkit-scrollbar{display:none}
+.quick-list{display:flex;gap:8px;width:max-content}
+.quick-btn{background:var(--white);border:1px solid var(--border-mid);border-radius:0;padding:9px 20px;font-size:11px;color:var(--text);cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:.08em;text-transform:uppercase;transition:all .2s}
+.quick-btn:hover{background:var(--forest);color:white;border-color:var(--forest)}
+.quick-btn:disabled{opacity:.3;cursor:not-allowed}
+.messages{display:flex;flex-direction:column;gap:18px;margin-bottom:24px;min-height:40px}
+.msg{max-width:82%}
 .msg-user{align-self:flex-end}
-.msg-ai{align-self:flex-start;max-width:90%}
-.bubble{padding:13px 18px;font-size:14px;line-height:1.8;font-family:'Jost',sans-serif;font-weight:300;white-space:pre-wrap}
-.msg-user .bubble{background:var(--sage-dark);color:white;border-radius:4px;font-family:'Jost',sans-serif;font-size:14px;font-weight:400}
-.msg-ai .bubble{background:var(--warm-white);border:0.5px solid var(--border-light);color:var(--text);border-radius:4px;font-family:'Cormorant Garamond',serif;font-size:15px;box-shadow:0 1px 4px rgba(44,36,22,.05)}
-.msg-ai .bubble.thinking{color:var(--muted);font-style:italic}
+.msg-ai{align-self:flex-start;max-width:92%}
+.bubble{padding:15px 22px;font-size:16px;line-height:1.7;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0}
+.msg-user .bubble{background:var(--forest);color:white;border-radius:2px}
+.msg-ai .bubble{background:var(--white);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:19px;border:0.5px solid var(--border);border-radius:2px;line-height:1.65}
+.msg-ai .bubble.thinking{color:var(--muted-light);font-style:italic}
+.chat-input-row{display:flex;gap:12px;align-items:flex-end}
+.chat-input{flex:1;border:1px solid var(--border-mid);border-radius:0;padding:14px 20px;font-size:16px;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0;resize:none;min-height:52px;max-height:120px;background:var(--white);line-height:1.5;color:var(--text);transition:border-color .2s}
+.chat-input:focus{outline:none;border-color:var(--sage)}
+.chat-send{width:52px;height:52px;background:var(--forest);border:none;border-radius:0;color:white;font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.chat-send:hover{background:var(--sage-dark)}
+.chat-send:disabled{opacity:.3;cursor:not-allowed}
+.chat-hint{font-family:'Inter',sans-serif;font-size:14px;color:var(--muted-light);text-align:center;margin-top:14px;letter-spacing:0;font-weight:400}
+.expired-msg{background:var(--white);border:0.5px solid var(--border);border-radius:16px;padding:48px;text-align:center}
+.expired-msg h4{font-family:'Cormorant Garamond',serif;color:var(--text);font-size:24px;margin-bottom:12px;font-weight:400;font-style:italic;line-height:1.3}
+.expired-msg p{font-size:16px;color:var(--muted);margin-bottom:24px;font-weight:400;line-height:1.7}
 
-.chat-input-row{display:flex;gap:10px;align-items:stretch}
-.chat-input{flex:1;border:0.5px solid var(--border);border-radius:4px;padding:12px 18px;font-size:14px;font-family:'Jost',sans-serif;font-weight:300;resize:none;min-height:48px;max-height:110px;background:var(--warm-white);transition:border-color .2s;line-height:1.5;color:var(--text)}
-.chat-input:focus{outline:none;border-color:var(--sage);background:white}
-.chat-send{width:48px;background:var(--warm-white);border:0.5px solid var(--border);border-radius:4px;color:var(--muted);font-size:18px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.chat-send:hover{background:var(--sage-light);border-color:var(--sage);color:var(--sage-dark)}
-.chat-send:disabled{opacity:.35;cursor:not-allowed}
-.chat-hint-below{font-family:'Jost',sans-serif;font-size:11px;color:var(--muted-light);text-align:center;margin-top:10px;letter-spacing:.04em}
+/* ── FOOTER ── */
+.site-footer{background:var(--forest);color:rgba(255,255,255,.65);padding:80px 56px 60px}
+.footer-inner{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:56px}
+.footer-brand{font-family:'EB Garamond',serif;font-size:22px;font-weight:500;letter-spacing:.01em;color:rgba(255,255,255,.9);margin-bottom:16px;letter-spacing:.01em}
+.footer-tagline{font-family:'Inter',sans-serif;font-size:15px;font-weight:400;line-height:1.7;color:rgba(255,255,255,.4);max-width:240px}
+.footer-col-label{font-family:'Inter',sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:20px;font-weight:400}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:12px}
+.footer-links a{font-family:'Inter',sans-serif;font-size:15px;font-weight:400;color:rgba(255,255,255,.55);text-decoration:none;transition:color .2s;letter-spacing:0}
+.footer-links a:hover{color:rgba(255,255,255,.9)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.07);margin-top:60px;padding-top:24px;font-family:'Inter',sans-serif;font-size:12px;color:rgba(255,255,255,.25);letter-spacing:.05em;text-align:center}
 
-.expired-msg{background:var(--terra-light);border:1px solid rgba(184,130,106,.25);border-radius:var(--radius);padding:1.5rem;text-align:center;font-family:'Jost',sans-serif}
-.expired-msg h4{color:var(--terra);font-size:.95rem;margin-bottom:.4rem;font-weight:500;letter-spacing:.02em}
-.expired-msg p{font-size:13px;color:var(--earth);margin-bottom:1rem;font-weight:300}
-
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:11px 22px;border-radius:99px;font-size:12px;font-family:'Jost',sans-serif;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;letter-spacing:.04em}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--text);color:white;padding:12px 26px;font-size:11px;font-family:'Inter',sans-serif;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap;letter-spacing:.1em;text-transform:uppercase;border-radius:0}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.toast.error{background:var(--red)}
-.toast.ok{background:var(--sage-dark)}
+.toast.error{background:#8B3A2A}
+.toast.ok{background:var(--sage)}
 
-.helper{font-size:12px;color:var(--muted);font-family:'Jost',sans-serif;text-align:center;margin-top:8px;font-weight:300;letter-spacing:.03em}
-.info-box{background:var(--sand-mid);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 16px;font-size:12px;color:var(--muted);font-family:'Jost',sans-serif;margin-bottom:16px;line-height:1.7;font-weight:300;letter-spacing:.02em}
-.result-box{background:var(--sage-light);border-radius:var(--radius-sm);padding:11px 16px;font-size:13px;color:var(--sage-dark);font-family:'Jost',sans-serif;margin-bottom:12px;display:none;font-weight:400}
-.divider{height:1px;background:var(--border-light);margin:1.5rem 0}
-.section-gap{margin-bottom:1rem}
+@media(max-width:768px){
+  .steps-grid,.sample-grid,.footer-inner{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .hero{padding:100px 28px 88px}
+  .philosophy,.steps-section,.sample-section,#inputSection{padding-left:28px;padding-right:28px}
+  .site-header{padding:0 28px}
+  .site-footer{padding:64px 28px 48px}
+}
 </style>
 </head>
 <body>
 
 <header class="site-header no-print">
-  <div class="brand">Eastern <b>Soul</b> <span>Path</span></div>
-  <div class="header-actions">
-    <span class="uses-badge sans" id="usesBadge" style="display:none"></span>
-    <button class="btn-print sans" id="btnPrint" onclick="window.print()">↓ Save as PDF</button>
+  <div class="brand">Eastern Soul Path<span class="brand-reg">®</span></div>
+  <div class="header-right">
+    <span class="uses-badge" id="usesBadge" style="display:none"></span>
+    <button class="btn-print" id="btnPrint" onclick="window.print()">↓ Save as PDF</button>
   </div>
 </header>
 
+<!-- 1. HERO -->
 <section class="hero no-print">
-  <div class="hero-brush">
-    <svg width="72" height="28" viewBox="0 0 72 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M6 22 C14 18 20 6 36 8 C52 10 58 20 66 14" stroke="#4A6741" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-      <path d="M18 24 C26 22 30 14 36 13" stroke="#4A6741" stroke-width="1" stroke-linecap="round" fill="none" opacity=".3"/>
-    </svg>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Life Navigation Reading</div>
+    <h1>When life feels confusing,<br>clarity is the first step.</h1>
+    <p class="hero-sub">Career crossroads. Relationship uncertainty. Decisions that keep looping in your mind. You don't need predictions — you need a clearer map.</p>
+    <div class="hero-sig">"I help you read the map, but you choose the road."</div>
   </div>
-  <h1>When life feels confusing,<br><em>clarity is the first step.</em></h1>
-  <p class="hero-sub">Career crossroads. Relationship uncertainty. Decisions that keep looping in your mind.<br>You don't need predictions — you need a clearer map.</p>
 </section>
 
-<div class="hero-quote-band no-print">
-  <div class="hero-quote-rule"></div>
-  <p class="hero-quote">"I help you read the map,<br>but you choose the road."</p>
-  <div class="hero-quote-rule"></div>
-</div>
+<!-- 2. PHILOSOPHY -->
+<section class="philosophy no-print">
+  <div class="philosophy-inner">
+    <div class="philosophy-label">Our Philosophy</div>
+    <h2 class="philosophy-title">Not astrology. Not fortune telling.<br>A map.</h2>
+    <p class="philosophy-body">BaZi is a 3,000-year-old Chinese system that reveals the patterns in your life — the timing of cycles, the shape of relationships, the windows for action. We use it the way a trusted friend with ancient wisdom would: warmly, honestly, without drama. You hold the road. We help you read it.</p>
+  </div>
+</section>
 
-<div class="how-strip no-print">
-  <div class="how-label">How it works</div>
-  <div class="how-cards">
-    <div class="how-card">
-      <div class="how-card-icon">📅</div>
-      <div class="how-card-num">Step 1</div>
-      <div class="how-card-t">Enter your birth details</div>
-      <div class="how-card-s">Date, time & timezone</div>
-    </div>
-    <div class="how-card">
-      <div class="how-card-icon">🔑</div>
-      <div class="how-card-num">Step 2</div>
-      <div class="how-card-t">Enter your key</div>
-      <div class="how-card-s">Emailed after purchase</div>
-    </div>
-    <div class="how-card">
-      <div class="how-card-icon">💬</div>
-      <div class="how-card-num">Step 3</div>
-      <div class="how-card-t">Ask your questions</div>
-      <div class="how-card-s">20 follow-ups included</div>
+<!-- 3. THREE STEPS -->
+<section class="steps-section no-print">
+  <div class="steps-inner">
+    <div class="steps-label">How it works</div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">Step 1</div>
+        <div class="step-title">Your birth details</div>
+        <div class="step-body">Date, time, and timezone — the coordinates of your arrival. From these, your personal BaZi chart is calculated.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 2</div>
+        <div class="step-title">Your life pattern</div>
+        <div class="step-body">A complete reading of your chart — career windows, relationship rhythms, timing cycles, and the years ahead.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 3</div>
+        <div class="step-title">Your question</div>
+        <div class="step-body">20 follow-up questions included. Ask about anything — a decision, a relationship, a moment of uncertainty.</div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<section id="inputSection">
-  <div class="container">
-
-    <div class="card section-gap" style="margin-bottom:1rem">
-      <div class="card-title sans">
-        <span class="card-title-icon">🌿</span>
-        Your Birth Details
+<!-- 4. SAMPLE READING -->
+<section class="sample-section no-print">
+  <div class="sample-inner">
+    <div class="sample-label">A glimpse</div>
+    <div class="sample-grid">
+      <div class="sample-q">
+        <div class="sample-q-label">A question</div>
+        <div class="sample-q-text">"Why do I keep attracting the wrong relationships — and when does that pattern shift for me?"</div>
       </div>
+      <div class="sample-a">
+        <div class="sample-a-label">From your reading</div>
+        <div class="sample-a-text">Your Day Master carries a deep need for harmony that can draw you toward people who appear calm on the surface but create instability underneath. <span class="sample-a-highlight">The pattern begins to shift around your late 30s</span>, when your second major life cycle introduces a more grounding energy. Until then, the invitation is to notice when you're choosing comfort over alignment.</div>
+      </div>
+    </div>
+  </div>
+</section>
 
+<!-- 5. FORM — bottom -->
+<section id="inputSection">
+  <div class="form-wrap">
+    <div class="form-section-label">Begin</div>
+    <div class="form-heading">Your reading</div>
+
+    <div class="card">
+      <div class="card-label">Birth details</div>
       <div class="gender-section">
         <div class="gender-label">Gender</div>
         <div class="gender-row">
-          <div class="gender-btn sans" onclick="selGender('male')" id="g-male">♂ Male</div>
-          <div class="gender-btn sel sans" onclick="selGender('female')" id="g-female">♀ Female</div>
+          <div class="gender-btn" onclick="selGender('male')" id="g-male">♂ Male</div>
+          <div class="gender-btn sel" onclick="selGender('female')" id="g-female">♀ Female</div>
         </div>
       </div>
-
       <div class="form-row">
         <div class="form-group">
           <div class="form-label">Date of Birth</div>
@@ -260,11 +458,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="form-group">
           <div class="form-label">Time of Birth</div>
           <input type="time" id="b-time" value="12:00">
-          <div style="font-size:11px;color:var(--muted-light);font-family:'Jost',sans-serif;margin-top:4px;letter-spacing:.01em">Don't know your birth time? Leave it as 12:00 PM</div>
+          <div style="font-size:13px;color:var(--muted-light);font-family:'Inter',sans-serif;margin-top:8px;font-weight:400;line-height:1.5">Don't know? Leave as 12:00 PM</div>
         </div>
       </div>
       <div class="form-group">
-        <div class="form-label">Your Timezone</div>
+        <div class="form-label">Timezone</div>
         <select id="b-tz">
           <option value="-8">Pacific Time (UTC-8)</option>
           <option value="-7">Mountain Time (UTC-7)</option>
@@ -281,61 +479,51 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <option value="10">Sydney (UTC+10)</option>
         </select>
       </div>
-
       <div class="divider"></div>
       <div class="form-group">
-        <div class="form-label">Your Name <span style="font-size:10px;opacity:.6;text-transform:none;letter-spacing:0">(optional)</span></div>
+        <div class="form-label">Your Name <span style="font-size:12px;opacity:.5;letter-spacing:0;font-weight:400">(optional)</span></div>
         <input type="text" id="name-input" placeholder="e.g. Sarah">
       </div>
     </div>
 
     <div class="card no-print">
-      <div class="card-title sans">
-        <span class="card-title-icon">🔑</span>
-        Your Reading Key
-      </div>
-      <div class="key-sub sans">Your key was emailed after purchase. It includes 1 full reading + 20 follow-up questions.</div>
+      <div class="card-label">Reading key</div>
+      <div class="key-sub">Your key was emailed after purchase. It includes 1 full reading + 20 follow-up questions.</div>
       <div class="key-row">
-        <input type="text" class="key-input sans" id="keyInput" placeholder="ESP-XXXXXXXXXXXXXXXX" autocomplete="off" onblur="validateKey()">
-        <button class="btn btn-outline btn-sm sans" onclick="validateKey()">Verify</button>
+        <input type="text" class="key-input" id="keyInput" placeholder="ESP-XXXXXXXXXXXXXXXX" autocomplete="off" onblur="validateKey()">
+        <button class="btn btn-outline btn-sm" onclick="validateKey()">Verify</button>
       </div>
-      <div class="result-box sans" id="key-result" style="margin-top:8px"></div>
-      <p class="key-link sans">Don't have a key? <a href="https://easternsoulfpath.com" target="_blank">Get your reading — $9.99 →</a></p>
+      <div class="result-box" id="key-result"></div>
+      <p class="key-link">Don't have a key? <a href="https://easternsoulfpath.com" target="_blank">Get your reading — $9.99 →</a></p>
     </div>
 
-    <div style="margin-top:1.25rem" class="no-print">
-      <button class="btn btn-primary sans" id="generateBtn" onclick="generateReading()" disabled>
-        🌿 &nbsp;Begin My Reading
-      </button>
-      <p class="helper sans">Your complete life navigation reading will appear below</p>
+    <div style="margin-top:2px" class="no-print">
+      <button class="btn btn-primary" id="generateBtn" onclick="generateReading()" disabled>Begin My Reading</button>
+      <p class="helper">Your complete life navigation reading will appear below</p>
     </div>
-
   </div>
 </section>
 
 <section id="loadingSection">
-  <div class="container" style="text-align:center">
+  <div style="text-align:center;max-width:600px;margin:0 auto;padding:0 28px">
     <span class="loading-icon">🌿</span>
     <div class="loading-title">Reading your path<span class="loading-dots"></span></div>
-    <div class="loading-sub sans">Weaving together 3,000 years of Eastern wisdom with your chart</div>
+    <div class="loading-sub">Weaving together 3,000 years of Eastern wisdom with your chart</div>
   </div>
 </section>
 
 <section id="readingPage">
   <div class="reading-header">
-    <div class="reading-name sans" id="reading-name-display"></div>
+    <div class="reading-name" id="reading-name-display"></div>
     <div class="reading-title">Eastern Soul Path</div>
-    <div class="reading-subtitle sans">Life Navigation Reading</div>
+    <div class="reading-subtitle">Life Navigation Reading</div>
     <div class="reading-pillars" id="reading-pillars-display"></div>
-    <div class="reading-meta sans" id="reading-meta-display"></div>
+    <div class="reading-meta" id="reading-meta-display"></div>
   </div>
-
   <div class="report-body">
     <div class="report-content" id="reportContent"></div>
-
     <div id="chatSection" class="no-print">
-      <div class="chat-title sans">Ask a follow-up question</div>
-
+      <div class="chat-title">Ask a follow-up question</div>
       <div class="quick-wrap">
         <div class="quick-list">
           <button class="quick-btn" onclick="ask('Should I make a career change right now, or wait? What does my timing say?')">Career change timing</button>
@@ -348,173 +536,117 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <button class="quick-btn" onclick="ask('What kind of people and partnerships are most supportive for me?')">Ideal partnerships</button>
         </div>
       </div>
-
       <div class="messages" id="messages"></div>
-
       <div id="expiredSection" style="display:none">
-        <div class="expired-msg sans">
-          <h4>Your 20 questions have been used 🌿</h4>
+        <div class="expired-msg">
+          <h4>Your 20 questions have been used</h4>
           <p>We hope this reading brought you clarity. You can start a fresh reading anytime.</p>
-          <a href="https://easternsoulfpath.com" style="display:inline-block;background:var(--earth-dark);color:white;padding:9px 22px;border-radius:4px;font-size:12px;text-decoration:none;font-weight:500;letter-spacing:.05em">Get a New Reading — $9.99 →</a>
+          <a href="https://easternsoulfpath.com" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Reading — $9.99 →</a>
         </div>
       </div>
-
       <div id="chatInputArea">
         <div class="chat-input-row">
-          <textarea class="chat-input sans" id="chatInput" placeholder="Ask anything about your path..." rows="1"
-            onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+          <textarea class="chat-input" id="chatInput" placeholder="Ask anything about your path..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
           <button class="chat-send" onclick="sendChat()" id="chatSendBtn" aria-label="Send">↑</button>
         </div>
-        <p class="chat-hint-below sans" id="usesLeftChat">20 questions remaining · one at a time</p>
+        <p class="chat-hint" id="usesLeftChat">20 questions remaining · one at a time</p>
       </div>
     </div>
-
-    <div class="print-only" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:11px;color:#888;font-family:sans-serif;text-align:center">
-      Eastern Soul Path · Life Navigation Reading · easternsoulfpath.com<br>
-      This reading is for guidance and self-reflection. It does not constitute professional advice.
+    <div class="print-only" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:12px;color:#888;font-family:sans-serif;text-align:center">
+      Eastern Soul Path · Life Navigation Reading · easternsoulfpath.com
     </div>
   </div>
 </section>
+
+<footer class="site-footer no-print">
+  <div class="footer-inner">
+    <div>
+      <div class="footer-brand">Eastern Soul Path</div>
+      <div class="footer-tagline">Ancient Eastern wisdom meets modern clarity. A map for navigating life's crossroads.</div>
+    </div>
+    <div>
+      <div class="footer-col-label">Navigate</div>
+      <ul class="footer-links">
+        <li><a href="https://easternsoulfpath.com">Get a Reading</a></li>
+        <li><a href="https://easternsoulfpath.com/about">About</a></li>
+        <li><a href="https://easternsoulfpath.com/faq">FAQ</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-label">Policies</div>
+      <ul class="footer-links">
+        <li><a href="https://easternsoulfpath.com/privacy">Privacy Policy</a></li>
+        <li><a href="https://easternsoulfpath.com/terms">Terms of Service</a></li>
+        <li><a href="https://easternsoulfpath.com/refund">Refund Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Eastern Soul Path · For guidance and self-reflection only</div>
+</footer>
 
 <div class="toast" id="toast"></div>
 
 <script>
 let gender='female',pillars=null,birthYear=null,licenseKey=null;
 let usesLeft=0,chatHistory=[],isSending=false,reportText='';
-
-function init(){
-  const saved=sessionStorage.getItem('esp_state');
-  if(saved){try{const s=JSON.parse(saved);pillars=s.pillars;birthYear=s.birthYear;gender=s.gender||'male';licenseKey=s.licenseKey;usesLeft=s.usesLeft||0;chatHistory=s.chatHistory||[];reportText=s.reportText||'';if(s.gender==='female')selGender('female');if(reportText)showReading(reportText,false);}catch(e){}}
-}
+function init(){const saved=sessionStorage.getItem('esp_state');if(saved){try{const s=JSON.parse(saved);pillars=s.pillars;birthYear=s.birthYear;gender=s.gender||'female';licenseKey=s.licenseKey;usesLeft=s.usesLeft||0;chatHistory=s.chatHistory||[];reportText=s.reportText||'';if(s.gender==='male')selGender('male');else selGender('female');if(reportText)showReading(reportText,false);}catch(e){}}}
 function saveState(){sessionStorage.setItem('esp_state',JSON.stringify({pillars,birthYear,gender,licenseKey,usesLeft,chatHistory,reportText}));}
-
 function selGender(g){gender=g;document.getElementById('g-male').classList.toggle('sel',g==='male');document.getElementById('g-female').classList.toggle('sel',g==='female');}
-
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3500);}
-
-function updateUsesDisplay(){
-  const badge=document.getElementById('usesBadge');
-  const chat=document.getElementById('usesLeftChat');
-  const qs=Math.max(0,usesLeft);
-  badge.textContent=`${qs} questions left`;badge.style.display='inline-block';
-  if(chat)chat.textContent=`${qs} questions remaining · one at a time`;
-}
-
+function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,usesLeft);badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time`;}
 async function validateKey(){
-  const key=document.getElementById('keyInput').value.trim();
-  if(!key)return;
-  try{
-    const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});
-    const data=await res.json();
-    const box=document.getElementById('key-result');
-    if(data.ok){licenseKey=key;box.style.display='block';box.textContent='✓ Key verified · 20 questions included';checkReady();showToast('Key verified!','ok');}
-    else{licenseKey=null;box.style.display='block';box.textContent=data.error||'Invalid key';checkReady();}
-  }catch{licenseKey=null;checkReady();}
+  const key=document.getElementById('keyInput').value.trim();if(!key)return;
+  try{const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const data=await res.json();const box=document.getElementById('key-result');
+  if(data.ok){licenseKey=key;box.style.display='block';box.style.color='var(--sage)';box.textContent='✓ Key verified · 20 questions included';checkReady();showToast('Key verified!','ok');}
+  else{licenseKey=null;box.style.display='block';box.style.color='#8B3A2A';box.textContent=data.error||'Invalid key';checkReady();}}catch{licenseKey=null;checkReady();}
 }
-
-function checkReady(){
-  const hasDate=!!document.getElementById('b-date').value;
-  document.getElementById('generateBtn').disabled=!(hasDate&&licenseKey);
-}
-
+function checkReady(){const hasDate=!!document.getElementById('b-date').value;document.getElementById('generateBtn').disabled=!(hasDate&&licenseKey);}
 async function generateReading(){
-  const d=document.getElementById('b-date').value;
-  const t=document.getElementById('b-time').value||'12:00';
+  const d=document.getElementById('b-date').value;const t=document.getElementById('b-time').value||'12:00';
   if(!d)return showToast('Please enter your date of birth','error');
   if(!licenseKey)return showToast('Please verify your reading key first','error');
-  const[y,m,day]=d.split('-').map(Number);
-  const hour=parseInt(t.split(':')[0])||12;
-  birthYear=y;
-  try{
-    const res=await fetch('/api/pillars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour})});
-    const calc=await res.json();
-    if(!calc.ok)return showToast('Could not calculate pillars','error');
-    pillars=calc.pillars;
-  }catch{return showToast('Connection error — please try again','error');}
-  document.getElementById('inputSection').style.display='none';
-  document.getElementById('loadingSection').style.display='block';
-  try{
-    const res=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,pillars,gender,birthYear})});
-    const data=await res.json();
-    document.getElementById('loadingSection').style.display='none';
-    if(!data.ok){document.getElementById('inputSection').style.display='block';return showToast(data.error||'Generation failed','error');}
-    usesLeft=data.remaining;reportText=data.report;chatHistory=[];
-    showReading(data.report,true);saveState();
-  }catch{document.getElementById('loadingSection').style.display='none';document.getElementById('inputSection').style.display='block';showToast('Connection failed — please try again','error');}
+  const[y,m,day]=d.split('-').map(Number);const hour=parseInt(t.split(':')[0])||12;birthYear=y;
+  try{const res=await fetch('/api/pillars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour})});const calc=await res.json();if(!calc.ok)return showToast('Could not calculate pillars','error');pillars=calc.pillars;}catch{return showToast('Connection error — please try again','error');}
+  document.getElementById('inputSection').style.display='none';document.getElementById('loadingSection').style.display='block';
+  try{const res=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,pillars,gender,birthYear})});const data=await res.json();document.getElementById('loadingSection').style.display='none';
+  if(!data.ok){document.getElementById('inputSection').style.display='block';return showToast(data.error||'Generation failed','error');}
+  usesLeft=data.remaining;reportText=data.report;chatHistory=[];showReading(data.report,true);saveState();}
+  catch{document.getElementById('loadingSection').style.display='none';document.getElementById('inputSection').style.display='block';showToast('Connection failed — please try again','error');}
 }
-
 function showReading(report,isNew){
   const name=document.getElementById('name-input')?.value?.trim()||'';
-  const g=gender==='male'?'Male':'Female';
-  const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const g=gender==='male'?'Male':'Female';const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   document.getElementById('reading-name-display').textContent=name?name.toUpperCase():'';
   document.getElementById('reading-meta-display').textContent=`${g} · Born ${birthYear} · ${date}`;
   if(pillars){const p=pillars;document.getElementById('reading-pillars-display').innerHTML=`<span class="pillar-chip">${p.hour.stem}${p.hour.branch}</span><span class="pillar-chip day">${p.day.stem}${p.day.branch}</span><span class="pillar-chip">${p.month.stem}${p.month.branch}</span><span class="pillar-chip">${p.year.stem}${p.year.branch}</span>`;}
   document.getElementById('reportContent').innerHTML=renderMarkdown(report);
-  document.getElementById('readingPage').style.display='block';
-  document.getElementById('loadingSection').style.display='none';
-  document.getElementById('inputSection').style.display='none';
-  document.getElementById('btnPrint').classList.add('visible');
+  document.getElementById('readingPage').style.display='block';document.getElementById('loadingSection').style.display='none';
+  document.getElementById('inputSection').style.display='none';document.getElementById('btnPrint').classList.add('visible');
   updateUsesDisplay();checkChatState();
   if(isNew){window.scrollTo({top:0,behavior:'smooth'});if(chatHistory.length>0)renderChatHistory();}
 }
-
-function renderMarkdown(text){
-  return text
-    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
-    .replace(/^### (.+)$/gm,'<h3 style="color:var(--sage-dark);font-size:.95rem;margin:1.25rem 0 .5rem">$1</h3>')
-    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.+?)\*/g,'<em>$1</em>')
-    .replace(/🟢/g,'<span style="color:#5A6B50">🟢</span>')
-    .replace(/🟡/g,'<span style="color:#8B6914">🟡</span>')
-    .replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>')
-    .replace(/^- (.+)$/gm,'<li>$1</li>')
-    .replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>')
-    .replace(/<\/ul>\s*<ul>/g,'')
-    .replace(/\n\n/g,'</p><p>')
-    .replace(/(<p><\/p>)/g,'')
-    .split('\n').map(l=>{if(l.startsWith('<h')||l.startsWith('<ul')||l.startsWith('<li'))return l;if(l.trim()&&!l.startsWith('<'))return`<p>${l}</p>`;return l;}).join('\n');
-}
-
+function renderMarkdown(text){return text.replace(/^## (.+)$/gm,'<h2>$1</h2>').replace(/^### (.+)$/gm,'<h3 style="color:var(--sage);font-size:20px;margin:2rem 0 .75rem;font-family:EB Garamond,serif;font-weight:400;line-height:1.3">$1</h3>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/🟢/g,'<span style="color:#3A5C35">🟢</span>').replace(/🟡/g,'<span style="color:#8B6914">🟡</span>').replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>').replace(/^- (.+)$/gm,'<li>$1</li>').replace(/(<li>[\s\S]*?<\/li>)/g,'<ul>$1</ul>').replace(/<\/ul>\s*<ul>/g,'').replace(/\n\n/g,'</p><p>').replace(/(<p><\/p>)/g,'').split('\n').map(l=>{if(l.startsWith('<h')||l.startsWith('<ul')||l.startsWith('<li'))return l;if(l.trim()&&!l.startsWith('<'))return`<p>${l}</p>`;return l;}).join('\n');}
 function checkChatState(){const qs=Math.max(0,usesLeft);if(qs<=0){document.getElementById('chatInputArea').style.display='none';document.getElementById('expiredSection').style.display='block';document.querySelectorAll('.quick-btn').forEach(b=>b.disabled=true);}updateUsesDisplay();}
-
 function ask(q){document.getElementById('chatInput').value=q;sendChat();}
 function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';}
-
 async function sendChat(){
-  if(isSending)return;
-  const input=document.getElementById('chatInput');
-  const msg=input.value.trim();
-  if(!msg)return;
-  if(usesLeft<=0)return showToast('No questions remaining','error');
-  isSending=true;input.value='';input.style.height='auto';
-  document.getElementById('chatSendBtn').disabled=true;
-  addMessage('user',msg);
-  const tid=addMessage('ai','🌿 Reflecting on your question...',true);
-  try{
-    const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,question:msg,pillars,gender,birthYear,history:chatHistory.slice(-12)})});
-    const data=await res.json();
-    removeMessage(tid);
-    if(!data.ok){addMessage('ai',data.error||'Something went wrong — please try again.');return;}
-    addMessage('ai',data.answer);usesLeft=data.remaining;
-    chatHistory.push({role:'user',content:msg});chatHistory.push({role:'assistant',content:data.answer});
-    saveState();checkChatState();
-    if(data.remaining<=2&&data.remaining>0)showToast(`${data.remaining} questions remaining`,'error');
-  }catch{removeMessage(tid);addMessage('ai','Connection issue — please try again in a moment.');}
+  if(isSending)return;const input=document.getElementById('chatInput');const msg=input.value.trim();
+  if(!msg)return;if(usesLeft<=0)return showToast('No questions remaining','error');
+  isSending=true;input.value='';input.style.height='auto';document.getElementById('chatSendBtn').disabled=true;
+  addMessage('user',msg);const tid=addMessage('ai','Reflecting on your question...',true);
+  try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,question:msg,pillars,gender,birthYear,history:chatHistory.slice(-12)})});const data=await res.json();removeMessage(tid);
+  if(!data.ok){addMessage('ai',data.error||'Something went wrong — please try again.');return;}
+  addMessage('ai',data.answer);usesLeft=data.remaining;chatHistory.push({role:'user',content:msg});chatHistory.push({role:'assistant',content:data.answer});
+  saveState();checkChatState();if(data.remaining<=2&&data.remaining>0)showToast(`${data.remaining} questions remaining`,'error');}
+  catch{removeMessage(tid);addMessage('ai','Connection issue — please try again in a moment.');}
   finally{isSending=false;document.getElementById('chatSendBtn').disabled=false;input.focus();}
 }
-
 let mc=0;
-function addMessage(role,text,thinking=false){
-  const id='m'+(++mc);const d=document.createElement('div');d.id=id;d.className='msg msg-'+role;
-  d.innerHTML=`<div class="bubble${thinking?' thinking':''}">${escHtml(text)}</div>`;
-  document.getElementById('messages').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});return id;
-}
+function addMessage(role,text,thinking=false){const id='m'+(++mc);const d=document.createElement('div');d.id=id;d.className='msg msg-'+role;d.innerHTML=`<div class="bubble${thinking?' thinking':''}">${escHtml(text)}</div>`;document.getElementById('messages').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});return id;}
 function removeMessage(id){document.getElementById(id)?.remove();}
 function renderChatHistory(){chatHistory.forEach(m=>addMessage(m.role==='user'?'user':'ai',m.content));}
-function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/🟢/g,'<span style="color:#5A6B50">🟢</span>').replace(/🟡/g,'<span style="color:#8B6914">🟡</span>').replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>').replace(/\n/g,'<br>');}
-
+function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/🟢/g,'<span style="color:#3A5C35">🟢</span>').replace(/🟡/g,'<span style="color:#8B6914">🟡</span>').replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>').replace(/\n/g,'<br>');}
 init();
 </script>
 </body>
