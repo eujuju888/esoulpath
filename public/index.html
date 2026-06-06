@@ -305,9 +305,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .report-content{font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.7;color:var(--text);letter-spacing:0}
 .report-content h2{font-family:'EB Garamond',Georgia,serif;font-size:clamp(28px,3vw,36px);color:var(--text);margin:3.5rem 0 1.25rem;padding-bottom:.875rem;border-bottom:0.5px solid var(--border);font-weight:400;letter-spacing:-.01em;line-height:1.2}
 .report-content h2:first-child{margin-top:0}
-.report-content p{margin-bottom:1.25rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;line-height:1.75;letter-spacing:0}
+.report-content p{margin-bottom:1.25rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;font-style:normal;line-height:1.75;letter-spacing:0}
 .report-content ul,.report-content ol{padding-left:1.5rem;margin-bottom:1.25rem}
-.report-content li{margin-bottom:.6rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;line-height:1.7}
+.report-content li{margin-bottom:.6rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;font-style:normal;line-height:1.7}
 .report-content strong{color:var(--text);font-weight:500}
 .report-content em{color:var(--sage)}
 
@@ -355,6 +355,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .toast.error{background:#8B3A2A}
 .toast.ok{background:var(--sage)}
+.nav-buy-btn{font-family:'EB Garamond',Georgia,serif;font-size:15px;font-weight:400;color:var(--sage);text-decoration:none;border-bottom:1px solid rgba(74,103,65,.3);letter-spacing:.01em;transition:border-color .2s}
+.nav-buy-btn:hover{border-bottom-color:var(--sage)}
 
 /* PDF warning banner */
 .pdf-warning{
@@ -407,6 +409,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="brand">Eastern Soul Path<span class="brand-reg">®</span></div>
   <div class="header-right">
     <span class="uses-badge" id="usesBadge" style="display:none"></span>
+    <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank" class="nav-buy-btn">Get your reading — $9.99 →</a>
     <button class="btn-print" id="btnPrint" onclick="window.print()">↓ Save as PDF</button>
   </div>
 </header>
@@ -530,7 +533,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <button class="btn btn-outline btn-sm" onclick="validateKey()">Verify</button>
       </div>
       <div class="result-box" id="key-result"></div>
-      <p class="key-link">Don't have a key? <a href="https://easternsoulfpath.com" target="_blank">Get your reading — $9.99 →</a></p>
+      <p class="key-link">Don't have a key? <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank">Get your reading — $9.99 →</a></p>
     </div>
 
     <div style="margin-top:2px" class="no-print">
@@ -582,7 +585,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="expired-msg">
           <h4>Your 10 questions have been used</h4>
           <p>We hope this reading brought you clarity. You can start a fresh reading anytime.</p>
-          <a href="https://easternsoulfpath.com" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Reading — $9.99 →</a>
+          <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Reading — $9.99 →</a>
         </div>
       </div>
       <div id="chatInputArea">
