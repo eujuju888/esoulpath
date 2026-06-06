@@ -5,6 +5,7 @@ const multer  = require('multer');
 const path    = require('path');
 const fs      = require('fs');
 const redis   = require('redis');
+const { Solar } = require('lunar-javascript');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -114,6 +115,24 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
+// ── BaZi Calculator using lunar-javascript ───────────────────
+function calcPillars(year, month, day, hour, minute = 0) {
+  try {
+    const solar = Solar.fromYmdHms(year, month, day, hour, minute, 0);
+    const lunar = solar.getLunar();
+    const bazi  = lunar.getEightChar();
+    return {
+      year:  { stem: bazi.getYearGan(),  branch: bazi.getYearZhi()  },
+      month: { stem: bazi.getMonthGan(), branch: bazi.getMonthZhi() },
+      day:   { stem: bazi.getDayGan(),   branch: bazi.getDayZhi()   },
+      hour:  { stem: bazi.getTimeGan(),  branch: bazi.getTimeZhi()  }
+    };
+  } catch (e) {
+    console.error('BaZi calculation error:', e.message);
+    throw new Error('Could not calculate pillars');
+  }
+}
+
 // ── Claude API ────────────────────────────────────────────────
 async function claude(system, messages, maxTokens) {
   const key = process.env.ANTHROPIC_API_KEY;
@@ -183,23 +202,6 @@ function chartContext(pillars, gender, birthYear) {
 Pillars — Hour: ${e(pillars.hour.stem)}/${e(pillars.hour.branch)} | Day: ${e(pillars.day.stem)}/${e(pillars.day.branch)} | Month: ${e(pillars.month.stem)}/${e(pillars.month.branch)} | Year: ${e(pillars.year.stem)}/${e(pillars.year.branch)}`;
 }
 
-// ── BaZi Calculator ───────────────────────────────────────────
-const S = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
-const B = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-
-function calcPillars(year, month, day, hour) {
-  const yAdj = (month < 2 || (month === 2 && day < 4)) ? year - 1 : year;
-  const yP = { stem: S[((yAdj-4)%10+10)%10], branch: B[((yAdj-4)%12+12)%12] };
-  const td = [6,4,6,5,6,6,7,8,8,8,7,7];
-  const mi = (((day < td[month-1] ? month-2 : month-1) % 12) + 12) % 12;
-  const mP = { stem: S[([2,4,6,8,0,2,4,6,8,0][((yAdj-4)%10+10)%10] + mi) % 10], branch: B[mi] };
-  const diff = Math.floor((new Date(year,month-1,day) - new Date(1900,0,1)) / 86400000);
-  const dP = { stem: S[((diff%10)+10)%10], branch: B[(((diff+10)%12)+12)%12] };
-  const bi = Math.floor((hour+1)/2) % 12;
-  const hP = { stem: S[([0,2,4,6,8,0,2,4,6,8][S.indexOf(dP.stem)] + bi) % 10], branch: B[bi] };
-  return { year: yP, month: mP, day: dP, hour: hP };
-}
-
 // ── Routes ────────────────────────────────────────────────────
 
 app.get('/health', (req, res) => {
@@ -214,12 +216,13 @@ app.get('/health', (req, res) => {
 
 app.post('/api/pillars', (req, res) => {
   try {
-    const { year, month, day, hour } = req.body;
-    res.json({ ok: true, pillars: calcPillars(+year, +month, +day, +(hour||12)) });
+    const { year, month, day, hour, minute } = req.body;
+    const pillars = calcPillars(+year, +month, +day, +(hour||12), +(minute||0));
+    res.json({ ok: true, pillars });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Validate key — returns remaining questions
+// Validate key
 app.post('/api/key', async (req, res) => {
   const { key } = req.body;
   if (!key) return res.status(400).json({ error: 'No key' });
