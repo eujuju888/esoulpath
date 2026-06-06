@@ -580,7 +580,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="messages" id="messages"></div>
       <div id="expiredSection" style="display:none">
         <div class="expired-msg">
-          <h4>Your 20 questions have been used</h4>
+          <h4>Your 10 questions have been used</h4>
           <p>We hope this reading brought you clarity. You can start a fresh reading anytime.</p>
           <a href="https://easternsoulfpath.com" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Reading — $9.99 →</a>
         </div>
@@ -590,7 +590,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <textarea class="chat-input" id="chatInput" placeholder="Ask anything about your path..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
           <button class="chat-send" onclick="sendChat()" id="chatSendBtn" aria-label="Send">↑</button>
         </div>
-        <p class="chat-hint" id="usesLeftChat">20 questions remaining · one at a time</p>
+        <p class="chat-hint" id="usesLeftChat">10 questions remaining · one at a time</p>
       </div>
     </div>
     <div class="print-only" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:12px;color:#888;font-family:sans-serif;text-align:center">
@@ -622,7 +622,7 @@ function updateUsesDisplay(){const badge=document.getElementById('usesBadge');co
 async function validateKey(){
   const key=document.getElementById('keyInput').value.trim();if(!key)return;
   try{const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const data=await res.json();const box=document.getElementById('key-result');
-  if(data.ok){licenseKey=key;box.style.display='block';box.style.color='var(--sage)';box.textContent='✓ Key verified · 20 questions included';checkReady();showToast('Key verified!','ok');}
+  if(data.ok){licenseKey=key;box.style.display='block';box.style.color='var(--sage)';box.textContent='✓ Key verified · 10 questions included';checkReady();showToast('Key verified!','ok');}
   else{licenseKey=null;box.style.display='block';box.style.color='#8B3A2A';box.textContent=data.error||'Invalid key';checkReady();}}catch{licenseKey=null;checkReady();}
 }
 function checkReady(){const hasDate=!!document.getElementById('b-date').value;document.getElementById('generateBtn').disabled=!(hasDate&&licenseKey);}
