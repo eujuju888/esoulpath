@@ -590,7 +590,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <textarea class="chat-input" id="chatInput" placeholder="Ask anything about your path..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
           <button class="chat-send" onclick="sendChat()" id="chatSendBtn" aria-label="Send">↑</button>
         </div>
-        <p class="chat-hint" id="usesLeftChat">10 questions remaining · one at a time</p>
+        <p class="chat-hint" id="usesLeftChat">10 questions remaining · one at a time · Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.</p>
       </div>
     </div>
     <div class="print-only" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:12px;color:#888;font-family:sans-serif;text-align:center">
@@ -618,7 +618,7 @@ function init(){selGender('female');}
 function saveState(){}
 function selGender(g){gender=g;document.getElementById('g-male').classList.toggle('sel',g==='male');document.getElementById('g-female').classList.toggle('sel',g==='female');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3500);}
-function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time`;}
+function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time · Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.`;}
 async function validateKey(){
   const key=document.getElementById('keyInput').value.trim();if(!key)return;
   try{const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const data=await res.json();const box=document.getElementById('key-result');
