@@ -524,7 +524,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
     <div class="card no-print">
       <div class="card-label">Reading key</div>
-      <div class="key-sub">Your key was emailed after purchase. It includes 1 full reading + 10 follow-up questions.</div>
+      <div class="key-sub">Your key was emailed after purchase. It includes 1 full reading + 20 follow-up questions.</div>
       <div class="key-row">
         <input type="text" class="key-input" id="keyInput" placeholder="ESP-XXXXXXXXXXXXXXXX" autocomplete="off" onblur="validateKey()">
         <button class="btn btn-outline btn-sm" onclick="validateKey()">Verify</button>
@@ -630,8 +630,8 @@ async function generateReading(){
   const d=document.getElementById('b-date').value;const t=document.getElementById('b-time').value||'12:00';
   if(!d)return showToast('Please enter your date of birth','error');
   if(!licenseKey)return showToast('Please verify your reading key first','error');
-  const[y,m,day]=d.split('-').map(Number);const hour=parseInt(t.split(':')[0])||12;birthYear=y;
-  try{const res=await fetch('/api/pillars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour})});const calc=await res.json();if(!calc.ok)return showToast('Could not calculate pillars','error');pillars=calc.pillars;}catch{return showToast('Connection error — please try again','error');}
+  const[y,m,day]=d.split('-').map(Number);const hour=parseInt(t.split(':')[0])||12;const minute=parseInt(t.split(':')[1])||0;birthYear=y;
+  try{const res=await fetch('/api/pillars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour,minute})});const calc=await res.json();if(!calc.ok)return showToast('Could not calculate pillars','error');pillars=calc.pillars;}catch{return showToast('Connection error — please try again','error');}
   document.getElementById('inputSection').style.display='none';document.getElementById('loadingSection').style.display='block';
   try{const res=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,pillars,gender,birthYear})});const data=await res.json();document.getElementById('loadingSection').style.display='none';
   if(!data.ok){document.getElementById('inputSection').style.display='block';return showToast(data.error||'Generation failed','error');}
