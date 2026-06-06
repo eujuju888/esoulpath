@@ -390,7 +390,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="philosophy-inner">
     <div class="philosophy-label">Our Philosophy</div>
     <h2 class="philosophy-title">Not astrology. Not fortune telling.<br>A map.</h2>
-    <p class="philosophy-body">BaZi is a 3,000-year-old Chinese system that reveals the patterns in your life — the timing of cycles, the shape of relationships, the windows for action. We use it the way a trusted friend with ancient wisdom would: warmly, honestly, without drama. You hold the road. We help you read it.</p>
+    <p class="philosophy-body">A way of seeing your life through patterns, timing, and relationships — interpreted with the calm of ancient wisdom and the clarity of modern understanding.</p>
   </div>
 </section>
 
@@ -559,26 +559,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </section>
 
 <footer class="site-footer no-print">
-  <div class="footer-inner">
+  <div class="footer-inner" style="grid-template-columns:1fr;max-width:480px">
     <div>
       <div class="footer-brand">Eastern Soul Path</div>
       <div class="footer-tagline">Ancient Eastern wisdom meets modern clarity. A map for navigating life's crossroads.</div>
-    </div>
-    <div>
-      <div class="footer-col-label">Navigate</div>
-      <ul class="footer-links">
-        <li><a href="https://easternsoulfpath.com">Get a Reading</a></li>
-        <li><a href="https://easternsoulfpath.com/about">About</a></li>
-        <li><a href="https://easternsoulfpath.com/faq">FAQ</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="footer-col-label">Policies</div>
-      <ul class="footer-links">
-        <li><a href="https://easternsoulfpath.com/privacy">Privacy Policy</a></li>
-        <li><a href="https://easternsoulfpath.com/terms">Terms of Service</a></li>
-        <li><a href="https://easternsoulfpath.com/refund">Refund Policy</a></li>
-      </ul>
     </div>
   </div>
   <div class="footer-bottom">© 2026 Eastern Soul Path · For guidance and self-reflection only</div>
@@ -588,12 +572,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 
 <script>
 let gender='female',pillars=null,birthYear=null,licenseKey=null;
-let usesLeft=0,chatHistory=[],isSending=false,reportText='';
-function init(){const saved=sessionStorage.getItem('esp_state');if(saved){try{const s=JSON.parse(saved);pillars=s.pillars;birthYear=s.birthYear;gender=s.gender||'female';licenseKey=s.licenseKey;usesLeft=s.usesLeft||0;chatHistory=s.chatHistory||[];reportText=s.reportText||'';if(s.gender==='male')selGender('male');else selGender('female');if(reportText)showReading(reportText,false);}catch(e){}}}
-function saveState(){sessionStorage.setItem('esp_state',JSON.stringify({pillars,birthYear,gender,licenseKey,usesLeft,chatHistory,reportText}));}
+let usesLeft=0,chatHistory=[],isSending=false,reportText='',reportUsed=false;
+function init(){const saved=sessionStorage.getItem('esp_state');if(saved){try{const s=JSON.parse(saved);pillars=s.pillars;birthYear=s.birthYear;gender=s.gender||'female';licenseKey=s.licenseKey;usesLeft=s.usesLeft||0;chatHistory=s.chatHistory||[];reportText=s.reportText||'';reportUsed=s.reportUsed||false;if(s.gender==='male')selGender('male');else selGender('female');if(reportText)showReading(reportText,false);}catch(e){}}}
+function saveState(){sessionStorage.setItem('esp_state',JSON.stringify({pillars,birthYear,gender,licenseKey,usesLeft,chatHistory,reportText,reportUsed}));}
 function selGender(g){gender=g;document.getElementById('g-male').classList.toggle('sel',g==='male');document.getElementById('g-female').classList.toggle('sel',g==='female');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3500);}
-function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,usesLeft);badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time`;}
+function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time`;}
 async function validateKey(){
   const key=document.getElementById('keyInput').value.trim();if(!key)return;
   try{const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const data=await res.json();const box=document.getElementById('key-result');
@@ -610,14 +594,20 @@ async function generateReading(){
   document.getElementById('inputSection').style.display='none';document.getElementById('loadingSection').style.display='block';
   try{const res=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,pillars,gender,birthYear})});const data=await res.json();document.getElementById('loadingSection').style.display='none';
   if(!data.ok){document.getElementById('inputSection').style.display='block';return showToast(data.error||'Generation failed','error');}
-  usesLeft=data.remaining;reportText=data.report;chatHistory=[];showReading(data.report,true);saveState();}
+  usesLeft=data.remainingQuestions||10;reportUsed=true;reportText=data.report;chatHistory=[];showReading(data.report,true);saveState();}
   catch{document.getElementById('loadingSection').style.display='none';document.getElementById('inputSection').style.display='block';showToast('Connection failed — please try again','error');}
 }
 function showReading(report,isNew){
   const name=document.getElementById('name-input')?.value?.trim()||'';
   const g=gender==='male'?'Male':'Female';const date=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
   document.getElementById('reading-name-display').textContent=name?name.toUpperCase():'';
-  document.getElementById('reading-meta-display').textContent=`${g} · Born ${birthYear} · ${date}`;
+  const birthDateStr = document.getElementById('b-date')?.value || '';
+  let birthDisplay = `Born ${birthYear}`;
+  if(birthDateStr){
+    const [by,bm,bd]=birthDateStr.split('-').map(Number);
+    birthDisplay='Born '+new Date(by,bm-1,bd).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  }
+  document.getElementById('reading-meta-display').textContent=`${g} · ${birthDisplay}`;
   if(pillars){const p=pillars;document.getElementById('reading-pillars-display').innerHTML=`<span class="pillar-chip">${p.hour.stem}${p.hour.branch}</span><span class="pillar-chip day">${p.day.stem}${p.day.branch}</span><span class="pillar-chip">${p.month.stem}${p.month.branch}</span><span class="pillar-chip">${p.year.stem}${p.year.branch}</span>`;}
   document.getElementById('reportContent').innerHTML=renderMarkdown(report);
   document.getElementById('readingPage').style.display='block';document.getElementById('loadingSection').style.display='none';
@@ -637,8 +627,8 @@ async function sendChat(){
   addMessage('user',msg);const tid=addMessage('ai','Reflecting on your question...',true);
   try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,question:msg,pillars,gender,birthYear,history:chatHistory.slice(-12)})});const data=await res.json();removeMessage(tid);
   if(!data.ok){addMessage('ai',data.error||'Something went wrong — please try again.');return;}
-  addMessage('ai',data.answer);usesLeft=data.remaining;chatHistory.push({role:'user',content:msg});chatHistory.push({role:'assistant',content:data.answer});
-  saveState();checkChatState();if(data.remaining<=2&&data.remaining>0)showToast(`${data.remaining} questions remaining`,'error');}
+  addMessage('ai',data.answer);usesLeft=data.remainingQuestions;chatHistory.push({role:'user',content:msg});chatHistory.push({role:'assistant',content:data.answer});
+  saveState();checkChatState();if(data.remainingQuestions<=2&&data.remainingQuestions>0)showToast(`${data.remainingQuestions} questions remaining`,'error');}
   catch{removeMessage(tid);addMessage('ai','Connection issue — please try again in a moment.');}
   finally{isSending=false;document.getElementById('chatSendBtn').disabled=false;input.focus();}
 }
