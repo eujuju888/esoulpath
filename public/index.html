@@ -37,6 +37,7 @@ body{
 }
 @media print{
   .no-print{display:none!important}
+  .print-chat{display:block!important}
   .print-only{display:block!important}
   .reading-header{background:var(--forest)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -355,6 +356,41 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .toast.error{background:#8B3A2A}
 .toast.ok{background:var(--sage)}
 
+/* PDF warning banner */
+.pdf-warning{
+  background:var(--white);
+  border-bottom:0.5px solid var(--border);
+  padding:14px 48px;
+  display:flex;align-items:center;gap:12px;
+  font-family:'Inter',sans-serif;font-size:13px;
+  font-weight:400;color:var(--muted);letter-spacing:0;
+  line-height:1.5
+}
+.pdf-warning-icon{font-size:16px;color:var(--sage);flex-shrink:0}
+.pdf-warning-btn{
+  margin-left:auto;flex-shrink:0;
+  font-family:'Inter',sans-serif;font-size:11px;font-weight:400;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sage);background:transparent;
+  border:0.5px solid var(--sage);
+  padding:7px 16px;cursor:pointer;transition:all .2s
+}
+.pdf-warning-btn:hover{background:var(--sage);color:white}
+
+/* Print: include chat messages */
+@media print{
+  #chatSection{display:block!important}
+  .chat-title{display:block!important}
+  .quick-wrap{display:none!important}
+  #chatInputArea{display:none!important}
+  #expiredSection .expired-msg a{display:none!important}
+  .messages{display:flex!important}
+  .msg-user .bubble{background:#1B3A2D!important;color:white!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .msg-ai .bubble{border:0.5px solid #ccc!important}
+  .chat-send{display:none!important}
+  .quick-btn{display:none!important}
+}
+
 @media(max-width:768px){
   .steps-grid,.sample-grid,.footer-inner{grid-template-columns:1fr}
   .form-row{grid-template-columns:1fr}
@@ -520,9 +556,14 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     <div class="reading-pillars" id="reading-pillars-display"></div>
     <div class="reading-meta" id="reading-meta-display"></div>
   </div>
+  <div class="pdf-warning no-print" id="pdfWarning">
+    <span class="pdf-warning-icon">↓</span>
+    Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.
+    <button onclick="window.print()" class="pdf-warning-btn">Save as PDF</button>
+  </div>
   <div class="report-body">
     <div class="report-content" id="reportContent"></div>
-    <div id="chatSection" class="no-print">
+    <div id="chatSection" class="print-chat">
       <div class="chat-title">Ask a follow-up question</div>
       <div class="quick-wrap">
         <div class="quick-list">
@@ -573,8 +614,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <script>
 let gender='female',pillars=null,birthYear=null,licenseKey=null;
 let usesLeft=0,chatHistory=[],isSending=false,reportText='',reportUsed=false;
-function init(){const saved=sessionStorage.getItem('esp_state');if(saved){try{const s=JSON.parse(saved);pillars=s.pillars;birthYear=s.birthYear;gender=s.gender||'female';licenseKey=s.licenseKey;usesLeft=s.usesLeft||0;chatHistory=s.chatHistory||[];reportText=s.reportText||'';reportUsed=s.reportUsed||false;if(s.gender==='male')selGender('male');else selGender('female');if(reportText)showReading(reportText,false);}catch(e){}}}
-function saveState(){sessionStorage.setItem('esp_state',JSON.stringify({pillars,birthYear,gender,licenseKey,usesLeft,chatHistory,reportText,reportUsed}));}
+function init(){selGender('female');}
+function saveState(){}
 function selGender(g){gender=g;document.getElementById('g-male').classList.toggle('sel',g==='male');document.getElementById('g-female').classList.toggle('sel',g==='female');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3500);}
 function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time`;}
@@ -594,7 +635,7 @@ async function generateReading(){
   document.getElementById('inputSection').style.display='none';document.getElementById('loadingSection').style.display='block';
   try{const res=await fetch('/api/report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,pillars,gender,birthYear})});const data=await res.json();document.getElementById('loadingSection').style.display='none';
   if(!data.ok){document.getElementById('inputSection').style.display='block';return showToast(data.error||'Generation failed','error');}
-  usesLeft=data.remainingQuestions||10;reportUsed=true;reportText=data.report;chatHistory=[];showReading(data.report,true);saveState();}
+  usesLeft=data.remainingQuestions||10;reportUsed=true;reportText=data.report;chatHistory=[];showReading(data.report,true);}
   catch{document.getElementById('loadingSection').style.display='none';document.getElementById('inputSection').style.display='block';showToast('Connection failed — please try again','error');}
 }
 function showReading(report,isNew){
@@ -628,7 +669,7 @@ async function sendChat(){
   try{const res=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key:licenseKey,question:msg,pillars,gender,birthYear,history:chatHistory.slice(-12)})});const data=await res.json();removeMessage(tid);
   if(!data.ok){addMessage('ai',data.error||'Something went wrong — please try again.');return;}
   addMessage('ai',data.answer);usesLeft=data.remainingQuestions;chatHistory.push({role:'user',content:msg});chatHistory.push({role:'assistant',content:data.answer});
-  saveState();checkChatState();if(data.remainingQuestions<=2&&data.remainingQuestions>0)showToast(`${data.remainingQuestions} questions remaining`,'error');}
+  checkChatState();if(data.remainingQuestions<=2&&data.remainingQuestions>0)showToast(`${data.remainingQuestions} questions remaining`,'error');}
   catch{removeMessage(tid);addMessage('ai','Connection issue — please try again in a moment.');}
   finally{isSending=false;document.getElementById('chatSendBtn').disabled=false;input.focus();}
 }
