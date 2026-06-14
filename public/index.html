@@ -305,9 +305,9 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .report-content{font-family:'EB Garamond',Georgia,serif;font-size:16px;line-height:1.7;color:var(--text);letter-spacing:0}
 .report-content h2{font-family:'EB Garamond',Georgia,serif;font-size:clamp(28px,3vw,36px);color:var(--text);margin:3.5rem 0 1.25rem;padding-bottom:.875rem;border-bottom:0.5px solid var(--border);font-weight:400;letter-spacing:-.01em;line-height:1.2}
 .report-content h2:first-child{margin-top:0}
-.report-content p{margin-bottom:1.25rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;font-style:normal;line-height:1.75;letter-spacing:0}
+.report-content p{margin-bottom:1.25rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:19px;font-weight:400;font-style:normal;line-height:1.75;letter-spacing:0}
 .report-content ul,.report-content ol{padding-left:1.5rem;margin-bottom:1.25rem}
-.report-content li{margin-bottom:.6rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:16px;font-weight:400;font-style:normal;line-height:1.7}
+.report-content li{margin-bottom:.6rem;color:var(--muted);font-family:'EB Garamond',Georgia,serif;font-size:19px;font-weight:400;font-style:normal;line-height:1.7}
 .report-content strong{color:var(--text);font-weight:500}
 .report-content em{color:var(--sage)}
 
@@ -679,7 +679,7 @@ let mc=0;
 function addMessage(role,text,thinking=false){const id='m'+(++mc);const d=document.createElement('div');d.id=id;d.className='msg msg-'+role;d.innerHTML=`<div class="bubble${thinking?' thinking':''}">${escHtml(text)}</div>`;document.getElementById('messages').appendChild(d);d.scrollIntoView({behavior:'smooth',block:'end'});return id;}
 function removeMessage(id){document.getElementById(id)?.remove();}
 function renderChatHistory(){chatHistory.forEach(m=>addMessage(m.role==='user'?'user':'ai',m.content));}
-function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/🟢/g,'<span style="color:#3A5C35">🟢</span>').replace(/🟡/g,'<span style="color:#8B6914">🟡</span>').replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>').replace(/\n/g,'<br>');}
+function escHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/^## (.+)$/gm,'<h3 style="font-family:\'EB Garamond\',serif;font-size:22px;font-weight:500;color:var(--text);margin:1.5rem 0 .5rem;line-height:1.3">$1</h3>').replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').replace(/\*(.+?)\*/g,'<em>$1</em>').replace(/🟢/g,'<span style="color:#3A5C35">🟢</span>').replace(/🟡/g,'<span style="color:#8B6914">🟡</span>').replace(/🔴/g,'<span style="color:#8B3A2A">🔴</span>').replace(/\n/g,'<br>');}
 init();
 </script>
 </body>
