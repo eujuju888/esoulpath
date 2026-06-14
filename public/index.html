@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Eon Soul — Your Life Navigation </title>
-<meta name="description" content="Ancient Eastern wisdom meets AI. Get your personal BaZi life navigation reading — career, love, timing, and what the road ahead holds.">
+<meta name="description" content="Ancient Eastern wisdom meets AI. Get your personal life navigation reading — career, love, timing, and what the road ahead holds.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Cormorant+Garamond:ital,wght@1,300;1,400;1,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -93,8 +93,8 @@ body{
 }
 /* Signature: Cormorant Italic */
 .hero-sig{
-  font-family:'Cormorant Garamond',Georgia,serif;
-  font-size:22px;font-style:italic;font-weight:400;
+  font-family:'EB Garamond',Georgia,serif;
+  font-size:22px;font-style:normal;font-weight:400;
   color:var(--sage);letter-spacing:.01em;line-height:1.4;
   display:flex;align-items:center;gap:20px
 }
@@ -285,7 +285,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 #loadingSection{display:none;text-align:center;padding:160px 40px;background:var(--sand)}
 .loading-icon{font-size:2.2rem;margin-bottom:32px;animation:sway 3s ease-in-out infinite;display:block}
 @keyframes sway{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
-.loading-title{font-family:'Cormorant Garamond',serif;font-size:32px;color:var(--text);margin-bottom:12px;font-weight:400;font-style:italic;line-height:1.2}
+.loading-title{font-family:'EB Garamond',serif;font-size:32px;color:var(--text);margin-bottom:12px;font-weight:400;font-style:normal;line-height:1.2}
 .loading-sub{font-size:16px;color:var(--muted-light);font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0}
 .loading-dots::after{content:'';animation:dots 1.5s steps(4,end) infinite}
 @keyframes dots{0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'}}
@@ -327,8 +327,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .msg-ai{align-self:flex-start;max-width:92%}
 .bubble{padding:15px 22px;font-size:16px;line-height:1.7;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0}
 .msg-user .bubble{background:var(--forest);color:white;border-radius:2px}
-.msg-ai .bubble{background:var(--white);color:var(--text);font-family:'Cormorant Garamond',serif;font-size:19px;border:0.5px solid var(--border);border-radius:2px;line-height:1.65}
-.msg-ai .bubble.thinking{color:var(--muted-light);font-style:italic}
+.msg-ai .bubble{background:var(--white);color:var(--text);font-family:'Inter',sans-serif;font-size:16px;border:0.5px solid var(--border);border-radius:2px;line-height:1.65}
+.msg-ai .bubble.thinking{color:var(--muted-light);font-style:normal}
 .chat-input-row{display:flex;gap:12px;align-items:flex-end}
 .chat-input{flex:1;border:1px solid var(--border-mid);border-radius:0;padding:14px 20px;font-size:16px;font-family:'Inter',sans-serif;font-weight:400;letter-spacing:0;resize:none;min-height:52px;max-height:120px;background:var(--white);line-height:1.5;color:var(--text);transition:border-color .2s}
 .chat-input:focus{outline:none;border-color:var(--sage)}
@@ -337,7 +337,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 .chat-send:disabled{opacity:.3;cursor:not-allowed}
 .chat-hint{font-family:'Inter',sans-serif;font-size:14px;color:var(--muted-light);text-align:center;margin-top:14px;letter-spacing:0;font-weight:400}
 .expired-msg{background:var(--white);border:0.5px solid var(--border);border-radius:16px;padding:48px;text-align:center}
-.expired-msg h4{font-family:'Cormorant Garamond',serif;color:var(--text);font-size:24px;margin-bottom:12px;font-weight:400;font-style:italic;line-height:1.3}
+.expired-msg h4{font-family:'EB Garamond',serif;color:var(--text);font-size:24px;margin-bottom:12px;font-weight:400;font-style:normal;line-height:1.3}
 .expired-msg p{font-size:16px;color:var(--muted);margin-bottom:24px;font-weight:400;line-height:1.7}
 
 /* ── FOOTER ── */
@@ -409,7 +409,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="brand">Eon Soul<span class="brand-reg">®</span></div>
   <div class="header-right">
     <span class="uses-badge" id="usesBadge" style="display:none"></span>
-    <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank" class="nav-buy-btn">Get your reading — $9.99 →</a>
+    <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank" class="nav-buy-btn">Get your blueprint — $9.99 →</a>
     <button class="btn-print" id="btnPrint" onclick="window.print()">↓ Save as PDF</button>
   </div>
 </header>
@@ -417,10 +417,10 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <!-- 1. HERO -->
 <section class="hero no-print">
   <div class="hero-inner">
-    <div class="hero-eyebrow">Life Navigation Reading</div>
-    <h1>When life feels confusing,<br>clarity is the first step.</h1>
-    <p class="hero-sub">Career crossroads. Relationship uncertainty. Decisions that keep looping in your mind. You don't need predictions — you need a clearer map.</p>
-    <div class="hero-sig">"I help you read the map, but you choose the road."</div>
+    <div class="hero-eyebrow">Life Navigation Blueprint</div>
+    <h1>When the path is unclear,<br>direction is everything.</h1>
+    <p class="hero-sub">Career shifts. Relationship transitions. Decisions that loop in your mind. Life moves in seasons. Understanding the season you're in changes how you move through it — you need a clearer way to see it.</p>
+    <div class="hero-sig">I help you understand the structure.</div>
   </div>
 </section>
 
@@ -428,8 +428,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <section class="philosophy no-print">
   <div class="philosophy-inner">
     <div class="philosophy-label">Our Philosophy</div>
-    <h2 class="philosophy-title">Not astrology. Not fortune telling.<br>A map.</h2>
-    <p class="philosophy-body">A way of seeing your life through patterns, timing, and relationships — interpreted with the calm of ancient wisdom and the clarity of modern understanding.</p>
+    <p class="philosophy-body">We offer a way of seeing your life through patterns, timing, and relationships — where ancient calm meets modern clarity.</p>
   </div>
 </section>
 
@@ -441,12 +440,12 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
       <div class="step-card">
         <div class="step-num">Step 1</div>
         <div class="step-title">Your birth details</div>
-        <div class="step-body">Date, time, and timezone — the coordinates of your arrival. From these, your personal BaZi chart is calculated.</div>
+        <div class="step-body">Date, time, and timezone — the coordinates of your arrival. From these, your personal blueprint is shaped.</div>
       </div>
       <div class="step-card">
         <div class="step-num">Step 2</div>
         <div class="step-title">Your life pattern</div>
-        <div class="step-body">A complete reading of your chart — career windows, relationship rhythms, timing cycles, and the years ahead.</div>
+        <div class="step-body">A complete blueprint of your life pattern — career windows, relationship rhythms, timing cycles, and the years ahead.</div>
       </div>
       <div class="step-card">
         <div class="step-num">Step 3</div>
@@ -467,8 +466,8 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="sample-q-text">"Why do I keep attracting the wrong relationships — and when does that pattern shift for me?"</div>
       </div>
       <div class="sample-a">
-        <div class="sample-a-label">From your reading</div>
-        <div class="sample-a-text">Your Day Master carries a deep need for harmony that can draw you toward people who appear calm on the surface but create instability underneath. <span class="sample-a-highlight">The pattern begins to shift around your late 30s</span>, when your second major life cycle introduces a more grounding energy. Until then, the invitation is to notice when you're choosing comfort over alignment.</div>
+        <div class="sample-a-label">From your blueprint</div>
+        <div class="sample-a-text">Your natural energy carries a deep need for harmony that can draw you toward people who appear calm on the surface but create instability underneath. <span class="sample-a-highlight">The pattern begins to shift around your late 30s</span>, when your second major life cycle introduces a more grounding energy. Until then, the invitation is to notice when you're choosing comfort over alignment.</div>
       </div>
     </div>
   </div>
@@ -478,7 +477,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <section id="inputSection">
   <div class="form-wrap">
     <div class="form-section-label">Begin</div>
-    <div class="form-heading">Your reading</div>
+    <div class="form-heading">Your Blueprint</div>
 
     <div class="card">
       <div class="card-label">Birth details</div>
@@ -526,19 +525,19 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
     </div>
 
     <div class="card no-print">
-      <div class="card-label">Reading key</div>
-      <div class="key-sub">Your key was emailed after purchase. It includes 1 full reading + 10 follow-up questions.</div>
+      <div class="card-label">Blueprint key</div>
+      <div class="key-sub">Your key was emailed after purchase. It includes 1 full blueprint + 10 follow-up questions.</div>
       <div class="key-row">
         <input type="text" class="key-input" id="keyInput" placeholder="ESP-XXXXXXXXXXXXXXXX" autocomplete="off" onblur="validateKey()">
         <button class="btn btn-outline btn-sm" onclick="validateKey()">Verify</button>
       </div>
       <div class="result-box" id="key-result"></div>
-      <p class="key-link">Don't have a key? <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank">Get your reading — $9.99 →</a></p>
+      <p class="key-link">Don't have a key? <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" target="_blank">Get your blueprint — $9.99 →</a></p>
     </div>
 
     <div style="margin-top:2px" class="no-print">
-      <button class="btn btn-primary" id="generateBtn" onclick="generateReading()" disabled>Begin My Reading</button>
-      <p class="helper">Your complete life navigation reading will appear below</p>
+      <button class="btn btn-primary" id="generateBtn" onclick="generateReading()" disabled>Begin My Blueprint</button>
+      <p class="helper">Your complete life navigation blueprint will appear below</p>
     </div>
   </div>
 </section>
@@ -546,7 +545,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 <section id="loadingSection">
   <div style="text-align:center;max-width:600px;margin:0 auto;padding:0 28px">
     <span class="loading-icon">🌿</span>
-    <div class="loading-title">Reading your path<span class="loading-dots"></span></div>
+    <div class="loading-title">Mapping your path<span class="loading-dots"></span></div>
     <div class="loading-sub">Weaving together 3,000 years of Eastern wisdom with your chart</div>
   </div>
 </section>
@@ -555,13 +554,13 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="reading-header">
     <div class="reading-name" id="reading-name-display"></div>
     <div class="reading-title">Eon Soul</div>
-    <div class="reading-subtitle">Life Navigation Reading</div>
+    <div class="reading-subtitle">Life Navigation Blueprint</div>
     <div class="reading-pillars" id="reading-pillars-display"></div>
     <div class="reading-meta" id="reading-meta-display"></div>
   </div>
   <div class="pdf-warning no-print" id="pdfWarning">
     <span class="pdf-warning-icon">↓</span>
-    Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.
+    Please save your blueprint as a PDF. For privacy, nothing is stored once you leave this page.
     <button onclick="window.print()" class="pdf-warning-btn">Save as PDF</button>
   </div>
   <div class="report-body">
@@ -585,7 +584,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
         <div class="expired-msg">
           <h4>Your 10 questions have been used</h4>
           <p>We hope this reading brought you clarity. You can start a fresh reading anytime.</p>
-          <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Reading — $9.99 →</a>
+          <a href="https://bsfdataintelligence.lemonsqueezy.com/checkout/buy/94bfde72-d5ea-4f0a-a183-fd7fa2165a0c" style="display:inline-block;background:var(--forest);color:white;padding:14px 32px;font-size:11px;text-decoration:none;font-weight:400;letter-spacing:.18em;text-transform:uppercase;border-radius:0">Get a New Blueprint — $9.99 →</a>
         </div>
       </div>
       <div id="chatInputArea">
@@ -593,11 +592,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           <textarea class="chat-input" id="chatInput" placeholder="Ask anything about your path..." rows="1" onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
           <button class="chat-send" onclick="sendChat()" id="chatSendBtn" aria-label="Send">↑</button>
         </div>
-        <p class="chat-hint" id="usesLeftChat">10 questions remaining · one at a time · Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.</p>
+        <p class="chat-hint" id="usesLeftChat">10 questions remaining · one at a time · Please save your blueprint as a PDF. For privacy, nothing is stored once you leave this page.</p>
       </div>
     </div>
     <div class="print-only" style="margin-top:2rem;padding-top:1rem;border-top:1px solid #ddd;font-size:12px;color:#888;font-family:sans-serif;text-align:center">
-      Eon Soul · Life Navigation Reading · easternsoulfpath.com
+      Eon Soul · Life Navigation Blueprint · easternsoulfpath.com
     </div>
   </div>
 </section>
@@ -606,7 +605,7 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
   <div class="footer-inner" style="grid-template-columns:1fr;max-width:480px">
     <div>
       <div class="footer-brand">Eon Soul</div>
-      <div class="footer-tagline">Ancient Eastern wisdom meets modern clarity. A map for navigating life's crossroads.</div>
+      <div class="footer-tagline">Timeless wisdom meets modern clarity. A map for navigating life's crossroads.</div>
     </div>
   </div>
   <div class="footer-bottom">© 2026 Eon Soul · For guidance and self-reflection only</div>
@@ -621,7 +620,7 @@ function init(){selGender('female');}
 function saveState(){}
 function selGender(g){gender=g;document.getElementById('g-male').classList.toggle('sel',g==='male');document.getElementById('g-female').classList.toggle('sel',g==='female');}
 function showToast(msg,type=''){const t=document.getElementById('toast');t.textContent=msg;t.className='toast show'+(type?' '+type:'');setTimeout(()=>t.className='toast',3500);}
-function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time · Please save your reading as a PDF. For privacy, nothing is stored once you leave this page.`;}
+function updateUsesDisplay(){const badge=document.getElementById('usesBadge');const chat=document.getElementById('usesLeftChat');const qs=Math.max(0,Math.round(usesLeft));badge.textContent=`${qs} questions left`;badge.style.display='inline-block';if(chat)chat.textContent=`${qs} questions remaining · one at a time · Please save your blueprint as a PDF. For privacy, nothing is stored once you leave this page.`;}
 async function validateKey(){
   const key=document.getElementById('keyInput').value.trim();if(!key)return;
   try{const res=await fetch('/api/key',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({key})});const data=await res.json();const box=document.getElementById('key-result');
@@ -632,7 +631,7 @@ function checkReady(){const hasDate=!!document.getElementById('b-date').value;do
 async function generateReading(){
   const d=document.getElementById('b-date').value;const t=document.getElementById('b-time').value||'12:00';
   if(!d)return showToast('Please enter your date of birth','error');
-  if(!licenseKey)return showToast('Please verify your reading key first','error');
+  if(!licenseKey)return showToast('Please verify your blueprint key first','error');
   const[y,m,day]=d.split('-').map(Number);const hour=parseInt(t.split(':')[0])||12;const minute=parseInt(t.split(':')[1])||0;birthYear=y;
   try{const res=await fetch('/api/pillars',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({year:y,month:m,day,hour,minute})});const calc=await res.json();if(!calc.ok)return showToast('Could not calculate pillars','error');pillars=calc.pillars;}catch{return showToast('Connection error — please try again','error');}
   document.getElementById('inputSection').style.display='none';document.getElementById('loadingSection').style.display='block';
